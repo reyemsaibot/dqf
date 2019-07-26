@@ -18,12 +18,33 @@ For the variable (D), (Q) and (P) you have to set the system id of your system l
 
 | MANDT | Workpackage | Number | InfoObject | Low Value | Type | Option | Sign | High Value |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 010 | TM | 01 | ZZ_ADSO | C | A | 
+| 010 | TM | 01 | ZZ_ADSO | ZZ_TM_ADSO1 | C | **A** | 
 
-If you want to 
+If you want to check an inbound table of an ADSO you have to configure it like this:
+
+| MANDT | Workpackage | Number | InfoObject | Low Value | Type | Option | Sign | High Value |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 010 | TM | 01 | ZZ_ADSO | ZZ_TM_ADSO1 | C | **I** | 
+
+You can also check a PSA table with the following parameter:
+
+| MANDT | Workpackage | Number | InfoObject | Low Value | Type | Option | Sign | High Value |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 010 | TM | 01 | ZZ_ADSO | ZZ_TM_ADSO1 | C | **P** | 
+
+As mentioned before you can either check for predefined values or compare a source with a target. For this you have to use the **type** field. This is how it should look like when you only check a predefined result:
+
+| MANDT | Workpackage | Number | InfoObject | Low Value | Type | Option | Sign | High Value |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 010 | TM | 01 | ZZ_ADSO | ZZ_TM_ADSO1 | **C** | A | 
+| 010 | TM | 01 | ZZ_KEYFIGURE | 0AMOUNT | **C** |
+| 010 | TM | 01 | ZZ_RESULT_W1D | 116 | **C** | EQ |
+| 010 | TM | 01 | ZZ_RESULT_W1Q | 116 | **C** | EQ |
+| 010 | TM | 01 | ZZ_RESULT_W1P | 1000 | **C** | EQ |
+| 010 | TM | 01 | 0CALMONTH | 201906 | **C** | EQ | I | 
 
 
 
 
 
-Als ZZ_ADSO muss der technische Name des ADSO z.B. VB0AUNVT angegeben werden. Als ZZ_KEYFIGURE muss der technische Name der Kennzahl, die man überprüfen möchte angeben, z.B. VF0KBEHW. Als ZZ_RESULT muss das erwartete Ergebnis angegeben werden, z.B. 116. Bei ZZ_RESULT muss als Option entweder EQ für Gleich oder NE für Ungleich mitgegeben werden. Somit kann man mit z.B. ZZ_RESULT NE 0 prüfen ob überhaupt Daten vorhanden sind. Wenn man nun das Beispiel von oben in die Tabelle eintragen würde, sieht dies folgendermaßen aus:
+Bei ZZ_RESULT muss als Option entweder EQ für Gleich oder NE für Ungleich mitgegeben werden. Somit kann man mit z.B. ZZ_RESULT NE 0 prüfen ob überhaupt Daten vorhanden sind. Wenn man nun das Beispiel von oben in die Tabelle eintragen würde, sieht dies folgendermaßen aus:
