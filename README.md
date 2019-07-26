@@ -30,7 +30,7 @@ You can also check a PSA table with the following parameter:
 
 | MANDT | Workpackage | Number | InfoObject | Low Value | Type | Option | Sign | High Value |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 010 | TM | 01 | ZZ_ADSO | ZZ_TM_ADSO1 | C | **P** | 
+| 010 | TM | 01 | ZZ_ADSO | Z_CUSTOMER | C | **P** | 
 
 As mentioned before you can either check for predefined values or compare a source with a target. For this you have to use the **type** field. This is how it should look like when you only check a predefined result:
 
@@ -45,7 +45,7 @@ As mentioned before you can either check for predefined values or compare a sour
 
 In this case you check on the development system (W1D) the result of the keyfigure 0AMOUNT for 06.2019 in the ADSO ZZ_TM_ADSO1. The result should be 116. 
 
-You have to set the Option EQ für Equal or NE for not equal. So you can check with this if data is available for your selection.
+You have to set the Option EQ für Equal or NE for not equal. So you can check with this if even data is available for your selection.
 
 | MANDT | Workpackage | Number | InfoObject | Low Value | Type | Option | Sign | High Value |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -56,6 +56,27 @@ You have to set the Option EQ für Equal or NE for not equal. So you can check w
 | 010 | TM | 01 | ZZ_RESULT_W1P | 0 | C | **NE** |
 | 010 | TM | 01 | 0CALMONTH | 201906 | C | EQ | I | 
 
+As option for your selection you can choose between the normal SAP options:
+- BT
+- NB
+- GT
+- GE
+- LT
+- LE
+
+As sign you can choose between Include (I) and Exclude (E). 
+
+Besides the check option you can also choose to compare a source with a target. For this use as type S or T.
+
+| MANDT | Workpackage | Number | InfoObject | Low Value | Type | Option | Sign | High Value |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 010 | TM | 02 | 0LGENT | 1234 | S | EQ | I |
+| 010 | TM | 02 | ZZ_ADSO | ZZ_ADSO1 | S | A |
+| 010 | TM | 02 | ZZ_KEYFIGURE | 0AMOUNT | S |
+| 010 | TM | 02 | ZZ_FACTOR | /-100 | S |
+| 010 | TM | 02 | ZLGENT | 4711 | T | EQ | I |
+| 010 | TM | 02 | ZZ_ADSO | ZZ_ADSO2 | T | A |
+| 010 | TM | 02 | ZZ_KEYFIGURE | 0AMOUNT | T |
 
 
 
