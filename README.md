@@ -43,6 +43,8 @@ As mentioned before you can either check for predefined values or compare a sour
 | 010 | TM | 01 | ZZ_RESULT_W1P | 1000 | **C** | EQ |
 | 010 | TM | 01 | 0CALMONTH | 201906 | **C** | EQ | I | 
 
+In this case you check on the development system (W1D) the result of the keyfigure 0AMOUNT for 06.2019 in the ADSO ZZ_TM_ADSO1. The result should be 116.
+
 
 
 
