@@ -70,13 +70,13 @@ Besides the check option you can also choose to compare a source with a target. 
 
 | MANDT | Workpackage | Number | InfoObject | Low Value | Type | Option | Sign | High Value |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 010 | TM | 02 | 0LGENT | 1234 | S | EQ | I |
-| 010 | TM | 02 | ZZ_ADSO | ZZ_ADSO1 | S | A |
-| 010 | TM | 02 | ZZ_KEYFIGURE | 0AMOUNT | S |
-| 010 | TM | 02 | ZZ_FACTOR | /-100 | S |
-| 010 | TM | 02 | ZLGENT | 4711 | T | EQ | I |
-| 010 | TM | 02 | ZZ_ADSO | ZZ_ADSO2 | T | A |
-| 010 | TM | 02 | ZZ_KEYFIGURE | 0AMOUNT | T |
+| 010 | TM | 02 | 0LGENT | 1234 | **S** | EQ | I |
+| 010 | TM | 02 | ZZ_ADSO | ZZ_ADSO1 | **S** | A |
+| 010 | TM | 02 | ZZ_KEYFIGURE | 0AMOUNT | **S** |
+| 010 | TM | 02 | ZZ_FACTOR | /-100 | **S** |
+| 010 | TM | 02 | ZLGENT | 4711 | **T** | EQ | I |
+| 010 | TM | 02 | ZZ_ADSO | ZZ_ADSO2 | **T** | A |
+| 010 | TM | 02 | ZZ_KEYFIGURE | 0AMOUNT | **T** |
 
 
 
