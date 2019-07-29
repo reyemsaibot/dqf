@@ -45,6 +45,9 @@ As mentioned before you can either check for predefined values or compare a sour
 
 In this case you check on the development system (W1D) the result of the keyfigure 0AMOUNT for 06.2019 in the ADSO ZZ_TM_ADSO1. The result should be 116. 
 
+![Image of Result type Check](https://github.com/reyemsaibot/dqf/blob/master/images/result_type_c.jpg)
+
+
 You have to set the Option EQ für Equal or NE for not equal. So you can check with this if even data is available for your selection.
 
 | MANDT | Workpackage | Number | InfoObject | Low Value | Type | Option | Sign | High Value |
