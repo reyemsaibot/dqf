@@ -81,6 +81,9 @@ Besides the check option you can also choose to compare a source with a target. 
 | 010 | TM | 02 | ZZ_ADSO | ZZ_ADSO2 | **T** | A |
 | 010 | TM | 02 | ZZ_KEYFIGURE | 0AMOUNT | **T** |
 
+In this case the active table of the ADSO ZZ_ADSO1 with the legal entity 1234 will be checked against the active table of the ADSO ZZ_ADSO2 with the legal entity 4711. The source has another factor of the data, we use the parameter **ZZ_FACTOR** to adjust the data. At the moment the following operators are supported:
+- "/"
+- "-"
 
 
 
