@@ -89,8 +89,14 @@ You can also use hierarchies to filter your data. Here is how the entry must loo
 
 | MANDT | Workpackage | Number | InfoObject | Low Value | Type | Option | Sign | High Value |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 010 | TM | 02 | 0LGENT | ZH_0LGENT_WLRD | C | HI | I | EUROPE |
+| 010 | TM | 03 | 0LGENT | ZH_0LGENT_WLRD | C | HI | I | EUROPE |
 
 In the low value you add the technical name of the hierarchy. As option you have to use **HI** and as high value the node you want to use. In my case we use the hierarchy **ZH_0LGENT_WRLD** with the node and children of **EUROPE**.
 
+You can also filter navigation and display attributes.
 
+| MANDT | Workpackage | Number | InfoObject | Low Value | Type | Option | Sign | High Value |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 010 | TM | 03 | 0LGENT_REGION | USA | C | EQ | I | 
+
+There will be all legal entiies, which have an entry in the master data table (p-table) and an entry with USA as region (ZREGION) determine.
