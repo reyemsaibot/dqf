@@ -85,5 +85,12 @@ In this case the active table of the ADSO ZZ_ADSO1 with the legal entity 1234 wi
 - "/"
 - "-"
 
+You can also use hierarchies to filter your data. Here is how the entry must look like:
+
+| MANDT | Workpackage | Number | InfoObject | Low Value | Type | Option | Sign | High Value |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 010 | TM | 02 | 0LGENT | ZH_0LGENT_WLRD | C | HI | I | EUROPE |
+
+In the low value you add the technical name of the hierarchy. As option you have to use **HI** and as high value the node you want to use. In my case we use the hierarchy **ZH_0LGENT_WRLD** with the node and children of **EUROPE**.
 
 
