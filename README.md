@@ -97,6 +97,6 @@ You can also filter navigation and display attributes.
 
 | MANDT | Workpackage | Number | InfoObject | Low Value | Type | Option | Sign | High Value |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 010 | TM | 03 | 0LGENT_REGION | USA | C | EQ | I | 
+| 010 | TM | 03 | 0LGENT_ZREGION | USA | C | EQ | I | 
 
 There will be all legal entiies, which have an entry in the master data table (p-table) and an entry with USA as region (ZREGION) determine.
