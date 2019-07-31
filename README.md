@@ -100,3 +100,21 @@ You can also filter navigation and display attributes.
 | 010 | TM | 03 | 0LGENT_ZREGION | USA | C | EQ | I | 
 
 There will be all legal entiies, which have an entry in the master data table (p-table) and an entry with USA as region (ZREGION) determine.
+
+Besides the checking of data directly in ADSOs, you can also analyze data in queries. For this you need the following information:
+- ZZ_HCPR
+- ZZ_KEYFIGURE
+- ZZ_QUERY
+- ZZ_RESULT_(D)
+- ZZ_RESULT_(Q)
+- ZZ_RESULT_(P)
+
+| MANDT | Workpackage | Number | InfoObject | Low Value | Type | Option | Sign | High Value |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 010 | TM | 04 | 0LGENT_ZREGION | USA | C | EQ | I | 
+| 010 | TM | 04 | ZZ_HCPR | Z_HCPR | C |
+| 010 | TM | 04 | ZZ_KEYFIGURE | VALUE | C |
+| 010 | TM | 04 | ZZ_QUERY | Z_QUERY_DQF | C |
+| 010 | TM | 04 | ZZ_RESULT_W1D | C | EQ |
+
+You can also use the mentioned options above with a query.
