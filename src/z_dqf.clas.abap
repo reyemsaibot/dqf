@@ -1,29 +1,29 @@
-class Z_DQF definition
+CLASS z_dqf DEFINITION
 
-  public
-  final
-  create public .
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
 
-public section.
+PUBLIC SECTION.
 
-  types TY_AP type ZTM_DQF_Cases-AP.
-  types:
-    tyt_ap TYPE RANGE OF ty_ap .
-  types:
+  TYPES ty_wp TYPE ztm_dqf_cases-wp.
+  TYPES:
+    tyt_wp TYPE RANGE OF ty_wp .
+  TYPES:
     ty_mailaddress TYPE c LENGTH 90 .
-  types:
+  TYPES:
     tyt_mailaddress TYPE RANGE OF ty_mailaddress .
-  types:
+  TYPES:
     tyt_ztm_dqf_cases TYPE STANDARD TABLE OF ztm_dqf_cases .
-  types:
+  TYPES:
     ty_dec_value TYPE p LENGTH 16 DECIMALS 2 .
-  types:
+  TYPES:
     ty_dec0 TYPE p LENGTH 16 DECIMALS 2 .
-  types:
+  TYPES:
     BEGIN OF ty_grid,
           status     TYPE c LENGTH 4,
-          ap         TYPE ty_ap,
-          testcase   TYPE int2,
+          wp         TYPE ty_wp,
+          num        TYPE int2,
           expected   TYPE string,
           result     TYPE string,
           s_comment  TYPE c LENGTH 60,
@@ -31,44 +31,44 @@ public section.
           t_comment  TYPE c LENGTH 60,
           t_datarows TYPE p LENGTH 16 DECIMALS 0,
          END OF ty_grid .
-  types:
+  TYPES:
     tyt_grid TYPE STANDARD TABLE OF ty_grid WITH DEFAULT KEY.
-  types:
+  TYPES:
     tyt_string TYPE STANDARD TABLE OF string WITH DEFAULT KEY.
-  types:
+  TYPES:
     tyt_num TYPE RANGE OF int2 .
-  types:
+  TYPES:
     BEGIN OF ty_nums,
-          ap  TYPE ty_ap,
+          wp  TYPE ty_wp,
           num TYPE int2,
          END OF ty_nums .
-  types:
+  TYPES:
     tyt_nums TYPE STANDARD TABLE OF ty_nums .
-  types:
+  TYPES:
     BEGIN OF ty_wherecond,
           wc TYPE string,
          END OF ty_wherecond .
-  types:
+  TYPES:
     tyt_wherecond TYPE STANDARD TABLE OF ty_wherecond WITH DEFAULT KEY .
-  types:
+  TYPES:
     BEGIN OF ty_parameter,
-      query           type rszcompid,
-      hcpr            type rsinfoprov,
-      keyfigure       type rsdiobjnm,
-      table           type string,
-      comment         type string,
-      result_expected type string,
-      result_opt      type c length 2,
-      factor          type string,
+      query           TYPE rszcompid,
+      hcpr            TYPE rsinfoprov,
+      keyfigure       TYPE rsdiobjnm,
+      table           TYPE string,
+      comment         TYPE string,
+      result_expected TYPE string,
+      result_opt      TYPE c LENGTH 2,
+      factor          TYPE string,
     END OF ty_parameter.
 
-  class-methods RUN
-    importing
-      !I_AP type TYT_AP
-      !I_NUM type TYT_NUM
-      !I_MAIL type BOOLEAN
-      !I_MAILADDRESS type TYT_MAILADDRESS .
-protected section.
+  CLASS-METHODS run
+    IMPORTING
+      !i_wp TYPE tyt_wp
+      !i_num TYPE tyt_num
+      !i_mail TYPE boolean
+      !i_mailaddress TYPE tyt_mailaddress .
+PROTECTED SECTION.
 PRIVATE SECTION.
 
   CONSTANTS:
@@ -266,7 +266,7 @@ ENDCLASS.
 
 
 
-CLASS Z_DQF IMPLEMENTATION.
+CLASS z_dqf IMPLEMENTATION.
 
 
 METHOD check_iobj.
@@ -359,7 +359,7 @@ DATA: lt_wherecond       TYPE tyt_wherecond,
       lv_hierarchy       TYPE rshienm.
 
 "Create the dynamic where condition
-LOOP AT it_ztm_dqf_cases ASSIGNING FIELD-SYMBOL(<ls_testing>) WHERE ap  = i_nums-ap AND
+LOOP AT it_ztm_dqf_cases ASSIGNING FIELD-SYMBOL(<ls_testing>) WHERE wp  = i_nums-wp AND
                                                                     num = i_nums-num.
   IF <ls_testing>-iobjnm+0(2) = 'ZZ' OR <ls_testing>-num NE i_nums-num.
     " Skip this record, as we do not use this in this case
@@ -407,7 +407,7 @@ ENDLOOP.
 ENDMETHOD.
 
 
-METHOD GET_CONDITION.
+METHOD get_condition.
 
 DATA: lv_wherecond TYPE ty_wherecond.
 
@@ -417,7 +417,7 @@ IF i_lines > 1 AND it_wherecond[] IS INITIAL.
   gv_bracket = rs_c_true.
   gv_count = gv_count + 1.
 "More than one entry but table is not empty
-ELSEIF i_lines > 1 AND it_wherecond[] IS NOT INITIAL and gv_bracket = rs_c_false.
+ELSEIF i_lines > 1 AND it_wherecond[] IS NOT INITIAL AND gv_bracket = rs_c_false.
   lv_wherecond-wc = `AND ( ` && i_iobjnm.
   "Bracket open
   gv_bracket = rs_c_true.
@@ -456,7 +456,7 @@ ENDIF.
 
 IF i_lines = 1.
   e_wherecond = lv_wherecond-wc.
-elseif i_lines = gv_count and gv_bracket = rs_c_true.
+ELSEIF i_lines = gv_count AND gv_bracket = rs_c_true.
   e_wherecond = lv_wherecond-wc && ` )`.
   gv_bracket = rs_c_false.
   gv_count = 0.
@@ -683,7 +683,7 @@ IF sy-subrc EQ 0.
       WHERE (lv_wherecond).
     et_values = <fs_infoobject>.
   CATCH cx_sy_dynamic_osql_syntax.
-    gv_message = `The Where Condition in Testcase ` && i_ztm_dqf_cases-num && ` of AP ` && i_ztm_dqf_cases-ap && ` is incorrect.`.
+    gv_message = `The Where Condition in Testcase ` && i_ztm_dqf_cases-num && ` of AP ` && i_ztm_dqf_cases-wp && ` is incorrect.`.
     MESSAGE gv_message TYPE 'E'.
   ENDTRY.
 ENDIF.
@@ -703,39 +703,39 @@ lv_layout-colwidth_optimize  = 'X'.
 
 *Create field catalog
 ls_fieldcat-fieldname = 'STATUS'.
-ls_fieldcat-seltext_m = text-001.
+ls_fieldcat-seltext_m = TEXT-001.
 APPEND ls_fieldcat TO lt_fieldcat.
 
 ls_fieldcat-fieldname = 'AP'.
-ls_fieldcat-seltext_m = text-003.
+ls_fieldcat-seltext_m = TEXT-003.
 APPEND ls_fieldcat TO lt_fieldcat.
 
 ls_fieldcat-fieldname = 'TESTCASE'.
-ls_fieldcat-seltext_m = text-004.
+ls_fieldcat-seltext_m = TEXT-004.
 APPEND ls_fieldcat TO lt_fieldcat.
 
 ls_fieldcat-fieldname = 'EXPECTED'.
-ls_fieldcat-seltext_m = text-005.
+ls_fieldcat-seltext_m = TEXT-005.
 APPEND ls_fieldcat TO lt_fieldcat.
 
 ls_fieldcat-fieldname = 'RESULT'.
-ls_fieldcat-seltext_m = text-006.
+ls_fieldcat-seltext_m = TEXT-006.
 APPEND ls_fieldcat TO lt_fieldcat.
 
 ls_fieldcat-fieldname = 'S_COMMENT'.
-ls_fieldcat-seltext_m = text-007.
+ls_fieldcat-seltext_m = TEXT-007.
 APPEND ls_fieldcat TO lt_fieldcat.
 
 ls_fieldcat-fieldname = 'S_DATAROWS'.
-ls_fieldcat-seltext_m = text-008.
+ls_fieldcat-seltext_m = TEXT-008.
 APPEND ls_fieldcat TO lt_fieldcat.
 
 ls_fieldcat-fieldname = 'T_COMMENT'.
-ls_fieldcat-seltext_m = text-009.
+ls_fieldcat-seltext_m = TEXT-009.
 APPEND ls_fieldcat TO lt_fieldcat.
 
 ls_fieldcat-fieldname = 'T_DATAROWS'.
-ls_fieldcat-seltext_m = text-010.
+ls_fieldcat-seltext_m = TEXT-010.
 APPEND ls_fieldcat TO lt_fieldcat.
 
 CLEAR: ls_fieldcat.
@@ -827,7 +827,7 @@ DATA(lt_variable) = VALUE ty_variable( FOR <ls_variable> IN it_variable WHERE ( 
 
 IF line_exists( lt_variable[ iobjnm = i_ztm_dqf_cases-iobjnm ] ).
 
-  data(ls_variable) = lt_variable[ iobjnm = i_ztm_dqf_cases-iobjnm ].
+  DATA(ls_variable) = lt_variable[ iobjnm = i_ztm_dqf_cases-iobjnm ].
 
   ls_parameter-name  = 'VAR_SIGN_' && i_counter.
   ls_parameter-value = i_ztm_dqf_cases-sign.
@@ -1030,8 +1030,8 @@ ENDIF.
 IF lv_flag = rs_c_true.
 
    lv_case-status     = '@08@'.
-   lv_case-ap         = i_nums-ap.
-   lv_case-testcase   = i_nums-num.
+   lv_case-wp         = i_nums-wp.
+   lv_case-num        = i_nums-num.
    lv_case-s_comment  = i_s_parameter-comment .
    lv_case-t_comment  = i_t_parameter-comment.
    lv_case-s_datarows = i_s_datarows .
@@ -1042,8 +1042,8 @@ IF lv_flag = rs_c_true.
  ELSE.
 
    lv_case-status     = '@0A@'.
-   lv_case-ap         = i_nums-ap.
-   lv_case-testcase   = i_nums-num.
+   lv_case-wp         = i_nums-wp.
+   lv_case-num        = i_nums-num.
    lv_case-s_comment  = i_s_parameter-comment.
    lv_case-t_comment  = i_t_parameter-comment.
    lv_case-expected   = lv_s_result_value.
@@ -1155,11 +1155,11 @@ DATA: lv_s_result_opt    TYPE c LENGTH 2,
       lt_case_final      TYPE tyt_grid.
 
 "Check flag for no entries
-data(lv_flag) = rs_c_true.
+DATA(lv_flag) = rs_c_true.
 
 get_type( EXPORTING it_ztm_dqf_cases   = it_ztm_dqf_cases
-          IMPORTING et_s_ztm_dqf_cases = data(lt_s_ztm_dqf_cases)
-                    et_t_ztm_dqf_cases = data(lt_t_ztm_dqf_cases) ).
+          IMPORTING et_s_ztm_dqf_cases = DATA(lt_s_ztm_dqf_cases)
+                    et_t_ztm_dqf_cases = DATA(lt_t_ztm_dqf_cases) ).
 
 LOOP AT it_nums ASSIGNING FIELD-SYMBOL(<fs_num>).
 
@@ -1247,7 +1247,7 @@ et_s_ztm_dqf_cases = VALUE tyt_s_ztm_dqf_cases( FOR <ls_ztm_dqf_cases> IN it_ztm
                                                 WHERE ( type = 'S' ) ( <ls_ztm_dqf_cases> ) ).
 
 et_t_ztm_dqf_cases = VALUE tyt_t_ztm_dqf_cases( FOR <ls_ztm_dqf_cases> IN it_ztm_dqf_cases
-                                                WHERE ( type = 'T' or type = 'C' ) ( <ls_ztm_dqf_cases> ) ).
+                                                WHERE ( type = 'T' OR type = 'C' ) ( <ls_ztm_dqf_cases> ) ).
 ENDMETHOD.
 
 
@@ -1267,7 +1267,7 @@ IF i_parameter-query EQ ''.
      gv_message = gex_adso->get_text( ).
      MESSAGE gv_message TYPE 'E'.
   CATCH cx_sy_dynamic_osql_syntax INTO gex_syntax.
-     gv_message = `The Where Condition in Testcase ` && i_nums-num && ` of AP ` && i_nums-ap && ` is incorrect.`.
+     gv_message = `The Where Condition in Testcase ` && i_nums-num && ` of AP ` && i_nums-wp && ` is incorrect.`.
      MESSAGE gv_message TYPE 'E'.
   ENDTRY.
 ELSE.
@@ -1319,12 +1319,12 @@ DATA: wa_testing TYPE ztm_dqf_cases.
 TRY.
   wa_testing = it_ztm_dqf_cases[ iobjnm = i_iobjnm
                                  num    = i_nums-num
-                                 ap     = i_nums-ap ].
+                                 wp     = i_nums-wp ].
 
   e_value = wa_testing-low.
 
   IF i_iobjnm = 'ZZ_ADSO' OR i_iobjnm = 'HCPR'.
-    e_comment = wa_testing-kommentar.
+    e_comment = wa_testing-comments.
   ENDIF.
 
   IF i_iobjnm = 'ZZ_RESULT' OR i_iobjnm = 'ZZ_ADSO'.
@@ -1340,7 +1340,7 @@ ENDTRY.
 ENDMETHOD.
 
 
-METHOD RUN.
+METHOD run.
 **********************************************************************
 * Author: T.Meyer, extern, Windhoff Software Services, 03.04.2019
 **********************************************************************
@@ -1358,6 +1358,8 @@ METHOD RUN.
 * 29.05.19 TM Add Query
 * 04.06.19 TM Refactoring
 * 25.06.19 TM Minor Changes to all Methods.
+* 11.07.19 TM Change to ABAP 7.4
+* 26.07.19 TM Change to english documentation
 **********************************************************************
 *&---------------------------------------------------------------------*
 *Guten Morgen ... Oh, und falls wir uns nicht mehr sehen, guten Tag, guten Abend und gute Nacht!
@@ -1366,24 +1368,24 @@ DATA: lt_recipient TYPE TABLE OF string.
 SELECT *
   FROM ztm_dqf_cases
   INTO TABLE @DATA(lt_testing)
-  WHERE ap  IN @i_ap AND
+  WHERE wp  IN @i_wp AND
         num IN @i_num.
 
 IF lt_testing[] IS INITIAL.
-  WRITE: text-002.
+  WRITE: TEXT-002.
   RETURN.
 ENDIF.
 SORT lt_testing ASCENDING BY num iobjnm type.
 
 * Get Unique Testcase
-SELECT DISTINCT ap,
+SELECT DISTINCT wp,
                 num
   FROM ztm_dqf_cases
-  INTO TABLE @data(lt_nums)
-  WHERE ap  IN @i_ap AND
+  INTO TABLE @DATA(lt_nums)
+  WHERE wp  IN @i_wp AND
         num IN @i_num.
 
-SORT lt_nums ASCENDING BY ap num.
+SORT lt_nums ASCENDING BY wp num.
 DATA(lt_case) = get_testcases( EXPORTING it_nums          = lt_nums
                                          it_ztm_dqf_cases = lt_testing ).
 
@@ -1391,7 +1393,7 @@ IF i_mail = rs_c_true.
   LOOP AT i_mailaddress ASSIGNING FIELD-SYMBOL(<ls_mail>).
     APPEND <ls_mail>-low TO lt_recipient.
   ENDLOOP.
-  send_mail( Exporting i_cases     = lt_case
+  send_mail( EXPORTING i_cases     = lt_case
                        i_recipient = lt_recipient ).
 ELSE.
   get_output( lt_case ).
@@ -1435,11 +1437,11 @@ TRY.
   APPEND 'Hallo,'  TO gv_text.
   APPEND 'folgende Testcases sind nicht in Ordnung:' TO gv_text.
   APPEND ' ' TO gv_text.
-  APPEND `Testcase ` && `Expected Result ` && `Result ` && text-007 TO gv_text.
+  APPEND `Testcase ` && `Expected Result ` && `Result ` && TEXT-007 TO gv_text.
   LOOP AT i_cases ASSIGNING FIELD-SYMBOL(<ls_case>).
 
     IF <ls_case>-status = '@0A@'.
-      lv_mail = <ls_case>-testcase && ` ` && <ls_case>-expected && ` ` && <ls_case>-result && ` ` && <ls_case>-s_comment && ` ` && <ls_case>-t_comment.
+      lv_mail = <ls_case>-num && ` ` && <ls_case>-expected && ` ` && <ls_case>-result && ` ` && <ls_case>-s_comment && ` ` && <ls_case>-t_comment.
       APPEND lv_mail TO gv_text.
     ENDIF.
 
