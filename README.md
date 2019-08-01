@@ -59,6 +59,8 @@ You have to set the Option EQ für Equal or NE for not equal. So you can check w
 | 010 | TM | 01 | ZZ_RESULT_W1P | 0 | C | **NE** |
 | 010 | TM | 01 | 0CALMONTH | 201906 | C | EQ | I | 
 
+![Image of Result type Check Not equal 0](https://github.com/reyemsaibot/dqf/blob/master/images/result_type_c_ne_zero.jpg)
+
 As option for your selection you can choose between the normal SAP options:
 - BT
 - NB
