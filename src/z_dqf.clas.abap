@@ -110,7 +110,7 @@ PRIVATE SECTION.
     EXPORTING
       !e_datarows TYPE ty_dec0
     RETURNING
-      VALUE(et_value) TYPE tyt_string .
+      VALUE(e_value) TYPE ty_dec_value .
   CLASS-METHODS check_iobj
     IMPORTING
       !i_iobjnm TYPE rsdiobjnm
@@ -123,7 +123,7 @@ PRIVATE SECTION.
       !i_parameter TYPE ty_parameter
       !it_wherecon TYPE tyt_wherecond
     EXPORTING
-      !et_value TYPE tyt_string
+      !e_value TYPE TY_DEC_VALUE
       !e_datarows TYPE ty_dec0
     RAISING
       cx_sy_dynamic_osql_syntax
@@ -198,13 +198,13 @@ PRIVATE SECTION.
       !it_parameter TYPE rrxw3tquery
       !i_nums TYPE ty_nums
     RETURNING
-      VALUE(et_cases) TYPE tyt_string .
+      VALUE(e_cases) TYPE ty_dec_value .
   CLASS-METHODS get_result
     IMPORTING
-      !it_s_table TYPE tyt_string OPTIONAL
+      !i_s_table TYPE ty_dec_value OPTIONAL
       !i_s_datarows TYPE p OPTIONAL
       !i_nums TYPE ty_nums
-      !it_t_table TYPE tyt_string OPTIONAL
+      !i_t_table TYPE ty_dec_value OPTIONAL
       !i_t_datarows TYPE p OPTIONAL
       !i_s_parameter TYPE ty_parameter OPTIONAL
       !i_t_parameter TYPE ty_parameter OPTIONAL
@@ -281,7 +281,7 @@ IF i_iobjnm CS '__'.
     FROM rsdatrnav
     INTO TABLE @DATA(lt_iobjnm_nav)
     WHERE atrnavnm = @i_iobjnm AND
-          objvers  = @rs_c_objvers-active.
+          objvers  = @rs_c_objvers-active. "#EC CI_SEL_NESTED "#EC CI_GENBUFF
 
   IF sy-subrc <> 0.
 
@@ -305,7 +305,7 @@ IF i_iobjnm CS '__'.
       INTO TABLE @DATA(lt_iobjnm_dis)
       WHERE objvers = @rs_c_objvers-active AND
             attritp = 'DIS' AND
-            attrinm = @lv_disattr.
+            attrinm = @lv_disattr. "#EC CI_SEL_NESTED "#EC CI_GENBUFF
 
     IF sy-subrc <> 0.
       RAISE EXCEPTION TYPE cx_rsd_iobj_not_exist EXPORTING iobjnm = i_iobjnm.
@@ -332,7 +332,7 @@ SELECT iobjnm,
   FROM rsdiobj
   INTO TABLE @DATA(lt_iobjnm)
   WHERE iobjnm = @lv_iobjnm AND
-        objvers = @rs_c_objvers-active.
+        objvers = @rs_c_objvers-active. "#EC CI_SEL_NESTED
 
 IF sy-subrc <> 0.
   RAISE EXCEPTION TYPE cx_rsd_iobj_not_exist EXPORTING iobjnm = lv_iobjnm.
@@ -362,7 +362,7 @@ DATA: lt_wherecond       TYPE tyt_wherecond,
 LOOP AT it_ztm_dqf_cases ASSIGNING FIELD-SYMBOL(<ls_testing>) WHERE wp  = i_nums-wp AND
                                                                     num = i_nums-num.
   IF <ls_testing>-iobjnm+0(2) = 'ZZ' OR <ls_testing>-num NE i_nums-num.
-    " Skip this record, as we do not use this in this case
+    "Skip this record, as we do not use this in this case
   ELSE.
     "Check if it is a query or adso we need to check
     IF i_parameter-query = ''.
@@ -399,11 +399,8 @@ LOOP AT it_ztm_dqf_cases ASSIGNING FIELD-SYMBOL(<ls_testing>) WHERE wp  = i_nums
       et_parameter = lt_parameter_final.
 
     ENDIF.
-
   ENDIF.
-
 ENDLOOP.
-
 ENDMETHOD.
 
 
@@ -475,7 +472,7 @@ DATA: lv_result_adso     TYPE REF TO data,
       lv_column_name     TYPE string,
       lv_datarows        TYPE p DECIMALS 0.
 
-FIELD-SYMBOLS: <fs_result_adso> TYPE ANY TABLE.
+FIELD-SYMBOLS: <fs_result_adso> TYPE ANY.
 
 TRY.
   DATA(lv_fieldnm) = check_iobj( i_parameter-keyfigure ).
@@ -486,7 +483,7 @@ ENDTRY.
 
 DATA(lv_type_keyfigure) = get_dataelement( lv_fieldnm ).
 
-CREATE DATA lv_result_adso TYPE TABLE OF (lv_type_keyfigure).
+CREATE DATA lv_result_adso TYPE (lv_type_keyfigure).
 ASSIGN lv_result_adso->* TO <fs_result_adso>.
 IF sy-subrc NE 0.
   RETURN.
@@ -498,7 +495,7 @@ CONCATENATE `SUM( ` lv_fieldnm ' )' INTO lv_column_name.
 SELECT tabname
   FROM dd02l
   INTO TABLE @DATA(lt_adso)
-  WHERE tabname = @i_parameter-table.
+  WHERE tabname = @i_parameter-table. "#EC CI_SEL_NESTED
 
 IF sy-subrc <> 0.
   RAISE EXCEPTION TYPE zcx_dqf_adso EXPORTING msgv1 = `` && i_parameter-table && ``.
@@ -510,16 +507,17 @@ TRY.
   "Select data
   SELECT (lv_column_name)
     FROM (i_parameter-table)
-    INTO TABLE <fs_result_adso>
-    WHERE (lt_wherecond).
+    INTO <fs_result_adso>
+    WHERE (lt_wherecond). "#EC CI_SEL_NESTED
+  ENDSELECT.
 
   "Count data
   SELECT COUNT(*)
     FROM (i_parameter-table)
     INTO lv_datarows
-    WHERE (lt_wherecond).
+    WHERE (lt_wherecond). "#EC CI_SEL_NESTED
 
-  et_value   = <fs_result_adso>.
+  e_value    = <fs_result_adso>.
   e_datarows = lv_datarows.
 
 CATCH cx_sy_dynamic_osql_syntax.
@@ -658,9 +656,7 @@ ENDTRY.
 lv_master_data_table = get_dataelement( EXPORTING i_infoobject  = i_fieldnm
                                                   i_masterdata  = rs_c_true ).
 
-"Get Dataelement
 DATA(lv_dataelement) = get_dataelement( i_fieldnm ).
-
 CREATE DATA lv_infoobject TYPE TABLE OF (lv_dataelement).
 ASSIGN lv_infoobject->* TO <fs_infoobject>.
 
@@ -680,7 +676,7 @@ IF sy-subrc EQ 0.
     SELECT (i_fieldnm)
       FROM (lv_master_data_table)
       INTO TABLE <fs_infoobject>
-      WHERE (lv_wherecond).
+      WHERE (lv_wherecond). "#EC CI_SEL_NESTED
     et_values = <fs_infoobject>.
   CATCH cx_sy_dynamic_osql_syntax.
     gv_message = `The Where Condition in Testcase ` && i_ztm_dqf_cases-num && ` of AP ` && i_ztm_dqf_cases-wp && ` is incorrect.`.
@@ -801,15 +797,16 @@ ENDMETHOD.
 
 METHOD get_psa_table.
 
+TYPES: ty_psa TYPE STANDARD TABLE OF RSODSTECH WITH EMPTY KEY.
+
 SELECT odsname_tech,
        userobj
   FROM rstsods
-  INTO TABLE @DATA(lt_rstsods).
+  INTO TABLE @data(lt_rstsods). "#EC CI_SEL_NESTED "#EC CI_GENBUFF
 
 IF sy-subrc = 0.
-  LOOP AT lt_rstsods ASSIGNING FIELD-SYMBOL(<ls_rstsods>) WHERE userobj CS i_table.
-    e_table = <ls_rstsods>-odsname_tech.
-  ENDLOOP.
+ data(lt_psa) = VALUE ty_psa( FOR <ls_rstsods> IN lt_rstsods  WHERE ( userobj CS i_table ) ( <ls_rstsods>-odsname_tech ) ).
+ e_table = lt_psa[ 1 ].
 ENDIF.
 ENDMETHOD.
 
@@ -827,7 +824,7 @@ DATA(lt_variable) = VALUE ty_variable( FOR <ls_variable> IN it_variable WHERE ( 
 
 IF line_exists( lt_variable[ iobjnm = i_ztm_dqf_cases-iobjnm ] ).
 
-  DATA(ls_variable) = lt_variable[ iobjnm = i_ztm_dqf_cases-iobjnm ].
+  data(ls_variable) = lt_variable[ iobjnm = i_ztm_dqf_cases-iobjnm ].
 
   ls_parameter-name  = 'VAR_SIGN_' && i_counter.
   ls_parameter-value = i_ztm_dqf_cases-sign.
@@ -960,7 +957,8 @@ IF sy-subrc <> 0.
 ENDIF.
 
 IF lt_result[] IS NOT INITIAL.
-  et_cases = VALUE ty_table( FOR <ls_result> IN lt_result ( <ls_result>-value ) ).
+  DATA(lt_value) = VALUE ty_table( FOR <ls_result> IN lt_result ( <ls_result>-value ) ).
+  e_cases = lt_value[ 1 ].
 ENDIF.
 ENDMETHOD.
 
@@ -975,22 +973,14 @@ DATA: lv_s_result_value TYPE ty_dec_value,
       lv_case           TYPE ty_grid.
 
 "If there is a Source / Target Case
-IF it_s_table IS NOT INITIAL.
-
-  LOOP AT it_s_table ASSIGNING FIELD-SYMBOL(<ls_s_table>).
-    lv_s_result_value = <ls_s_table>.
-  ENDLOOP.
-
-  LOOP AT it_t_table ASSIGNING FIELD-SYMBOL(<ls_t_table>).
-    lv_t_result_value = <ls_t_table>.
-  ENDLOOP.
+IF i_s_table IS NOT INITIAL.
 
   IF i_s_parameter-factor NE ''.
-    lv_s_result_value = cl_java_script=>create( )->evaluate( 'eval( ' && lv_s_result_value && i_s_parameter-factor && ' );' ).
+    lv_s_result_value = cl_java_script=>create( )->evaluate( 'eval( ' && i_s_table && i_s_parameter-factor && ' );' ).
   ENDIF.
 
   IF i_t_parameter-factor NE ''.
-    lv_t_result_value = cl_java_script=>create( )->evaluate( 'eval( ' && lv_t_result_value && i_t_parameter-factor && ' );' ).
+    lv_t_result_value = cl_java_script=>create( )->evaluate( 'eval( ' && i_t_table && i_t_parameter-factor && ' );' ).
   ENDIF.
 
   IF lv_s_result_value = lv_t_result_value.
@@ -1001,29 +991,27 @@ IF it_s_table IS NOT INITIAL.
 
 ELSE.
 
-  LOOP AT it_t_table ASSIGNING FIELD-SYMBOL(<ls_table>).
-    lv_s_result_value = i_t_parameter-result_expected.
-    lv_t_result_value = <ls_table>.
+  lv_s_result_value = i_t_parameter-result_expected.
+  lv_t_result_value = i_t_table.
 
-    IF i_t_parameter-factor NE ''.
-      lv_t_result_value = cl_java_script=>create( )->evaluate( 'eval( ' && lv_t_result_value && i_t_parameter-factor && ' );' ).
-    ENDIF.
+  IF i_t_parameter-factor NE ''.
+    lv_t_result_value = cl_java_script=>create( )->evaluate( 'eval( ' && i_t_table && i_t_parameter-factor && ' );' ).
+  ENDIF.
 
-    "Check option of zz_result
-    IF i_t_parameter-result_opt = gc_eq.
-      IF lv_s_result_value = lv_t_result_value.
-        lv_flag = rs_c_true.
-      ELSE.
-        lv_flag = rs_c_false.
-      ENDIF.
-    ELSEIF i_t_parameter-result_opt = gc_ne.
-      IF lv_s_result_value <> lv_t_result_value.
-        lv_flag = rs_c_true.
-      ELSE.
-        lv_flag = rs_c_false.
-      ENDIF.
+  "Check option of zz_result
+  IF i_t_parameter-result_opt = gc_eq.
+    IF lv_s_result_value = lv_t_result_value.
+      lv_flag = rs_c_true.
+    ELSE.
+      lv_flag = rs_c_false.
     ENDIF.
-  ENDLOOP.
+  ELSEIF i_t_parameter-result_opt = gc_ne.
+    IF lv_s_result_value <> lv_t_result_value.
+      lv_flag = rs_c_true.
+    ELSE.
+      lv_flag = rs_c_false.
+    ENDIF.
+  ENDIF.
 
 ENDIF.
 
@@ -1055,7 +1043,6 @@ IF lv_flag = rs_c_true.
 ENDIF.
 
 et_cases = lt_case.
-
 ENDMETHOD.
 
 
@@ -1144,22 +1131,22 @@ METHOD get_testcases.
 
 DATA: lv_s_result_opt    TYPE c LENGTH 2,
       lt_s_wherecond     TYPE tyt_wherecond,
-      lt_s_value         TYPE tyt_string,
+      lt_s_value         TYPE ty_dec_value,
       lv_s_datarows      TYPE ty_dec0,
 
       lv_t_result_opt    TYPE c LENGTH 2,
       lt_t_wherecond     TYPE tyt_wherecond,
-      lt_t_value         TYPE tyt_string,
+      lt_t_value         TYPE ty_dec_value,
       lv_t_datarows      TYPE ty_dec0,
 
       lt_case_final      TYPE tyt_grid.
 
 "Check flag for no entries
-DATA(lv_flag) = rs_c_true.
+data(lv_flag) = rs_c_true.
 
 get_type( EXPORTING it_ztm_dqf_cases   = it_ztm_dqf_cases
-          IMPORTING et_s_ztm_dqf_cases = DATA(lt_s_ztm_dqf_cases)
-                    et_t_ztm_dqf_cases = DATA(lt_t_ztm_dqf_cases) ).
+          IMPORTING et_s_ztm_dqf_cases = data(lt_s_ztm_dqf_cases)
+                    et_t_ztm_dqf_cases = data(lt_t_ztm_dqf_cases) ).
 
 LOOP AT it_nums ASSIGNING FIELD-SYMBOL(<fs_num>).
 
@@ -1221,10 +1208,10 @@ LOOP AT it_nums ASSIGNING FIELD-SYMBOL(<fs_num>).
                                          i_nums             = <fs_num>
                                          it_parameter_final = lt_t_parameter_final ).
   ENDIF.
-  DATA(lt_case) = get_result( EXPORTING it_s_table    = lt_s_value
+  DATA(lt_case) = get_result( EXPORTING i_s_table     = lt_s_value
                                         i_s_datarows  = lv_s_datarows
                                         i_nums        = <fs_num>
-                                        it_t_table    = lt_t_value
+                                        i_t_table     = lt_t_value
                                         i_t_datarows  = lv_t_datarows
                                         i_s_parameter = ls_s_parameter
                                         i_t_parameter = ls_t_parameter ).
@@ -1261,7 +1248,7 @@ IF i_parameter-query EQ ''.
   TRY.
     get_data( EXPORTING i_parameter = i_parameter
                         it_wherecon = it_wherecon
-              IMPORTING et_value    = et_value
+              IMPORTING e_value     = e_value
                         e_datarows  = e_datarows ).
   CATCH zcx_dqf_adso INTO gex_adso.
      gv_message = gex_adso->get_text( ).
@@ -1277,9 +1264,9 @@ ELSE.
                                                       i_counter   = lv_counter ).
   APPEND LINES OF it_parameter_final TO lt_parameter_final.
   APPEND LINES OF lt_parameter TO lt_parameter_final.
-  et_value = get_query_result( EXPORTING i_nums       = i_nums
-                                         i_parameter  = i_parameter
-                                         it_parameter = lt_parameter_final ).
+  e_value = get_query_result( EXPORTING i_nums       = i_nums
+                                        i_parameter  = i_parameter
+                                        it_parameter = lt_parameter_final ).
 ENDIF.
 ENDMETHOD.
 
@@ -1358,12 +1345,12 @@ METHOD run.
 * 29.05.19 TM Add Query
 * 04.06.19 TM Refactoring
 * 25.06.19 TM Minor Changes to all Methods.
-* 11.07.19 TM Change to ABAP 7.4
+* 11.07.19 TM Change to ABAP 7.43
 * 26.07.19 TM Change to english documentation
 **********************************************************************
 *&---------------------------------------------------------------------*
-*Guten Morgen ... Oh, und falls wir uns nicht mehr sehen, guten Tag, guten Abend und gute Nacht!
-DATA: lt_recipient TYPE TABLE OF string.
+"Guten Morgen ... Oh, und falls wir uns nicht mehr sehen, guten Tag, guten Abend und gute Nacht!
+TYPES: ty_recipient TYPE STANDARD TABLE OF ty_mailaddress WITH EMPTY KEY.
 
 SELECT *
   FROM ztm_dqf_cases
@@ -1372,16 +1359,17 @@ SELECT *
         num IN @i_num.
 
 IF lt_testing[] IS INITIAL.
-  WRITE: TEXT-002.
+  WRITE: text-002.
   RETURN.
 ENDIF.
 SORT lt_testing ASCENDING BY num iobjnm type.
 
-* Get Unique Testcase
+"Get Unique Testcase
 SELECT DISTINCT wp,
-                num
+       num
   FROM ztm_dqf_cases
   INTO TABLE @DATA(lt_nums)
+  BYPASSING BUFFER
   WHERE wp  IN @i_wp AND
         num IN @i_num.
 
@@ -1390,9 +1378,7 @@ DATA(lt_case) = get_testcases( EXPORTING it_nums          = lt_nums
                                          it_ztm_dqf_cases = lt_testing ).
 
 IF i_mail = rs_c_true.
-  LOOP AT i_mailaddress ASSIGNING FIELD-SYMBOL(<ls_mail>).
-    APPEND <ls_mail>-low TO lt_recipient.
-  ENDLOOP.
+  DATA(lt_recipient) = VALUE ty_recipient( FOR <ls_mail> IN i_mailaddress ( <ls_mail>-low ) ).
   send_mail( EXPORTING i_cases     = lt_case
                        i_recipient = lt_recipient ).
 ELSE.

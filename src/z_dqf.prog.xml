@@ -10,6 +10,13 @@
     <FIXPT>X</FIXPT>
     <UCCHECK>X</UCCHECK>
    </PROGDIR>
+   <TPOOL>
+    <item>
+     <ID>R</ID>
+     <ENTRY>Data Quality Framework</ENTRY>
+     <LENGTH>22</LENGTH>
+    </item>
+   </TPOOL>
   </asx:values>
  </asx:abap>
 </abapGit>
