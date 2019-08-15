@@ -16,26 +16,26 @@ The following information have to be provided so that the program can work corre
 
 For the variable (D), (Q) and (P) you have to set the system id of your system landscape. When you check the active table of an ADSO it have to look like this:
 
-| MANDT | Workpackage | Number | InfoObject | Low Value | Type | Option | Sign | High Value |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| MANDT | Workpackage | Number | InfoObject | Low Value | Type | Option | Sign | High Value | Comment
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 010 | TM | 01 | ZZ_ADSO | ZZ_TM_ADSO1 | C | **A** | 
 
 If you want to check an inbound table of an ADSO you have to configure it like this:
 
-| MANDT | Workpackage | Number | InfoObject | Low Value | Type | Option | Sign | High Value |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| MANDT | Workpackage | Number | InfoObject | Low Value | Type | Option | Sign | High Value | Comment
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 010 | TM | 01 | ZZ_ADSO | ZZ_TM_ADSO1 | C | **I** | 
 
 You can also check a PSA table with the following parameter:
 
-| MANDT | Workpackage | Number | InfoObject | Low Value | Type | Option | Sign | High Value |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| MANDT | Workpackage | Number | InfoObject | Low Value | Type | Option | Sign | High Value | Comment
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 010 | TM | 01 | ZZ_ADSO | Z_CUSTOMER | C | **P** | 
 
 As mentioned before you can either check for predefined values or compare a source with a target. For this you have to use the **type** field. This is how it should look like when you only check a predefined result:
 
-| MANDT | Workpackage | Number | InfoObject | Low Value | Type | Option | Sign | High Value |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| MANDT | Workpackage | Number | InfoObject | Low Value | Type | Option | Sign | High Value | Comment
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 010 | TM | 01 | ZZ_ADSO | ZZ_TM_ADSO1 | **C** | A | 
 | 010 | TM | 01 | ZZ_KEYFIGURE | 0AMOUNT | **C** |
 | 010 | TM | 01 | ZZ_RESULT_W1D | 116 | **C** | EQ |
@@ -50,8 +50,8 @@ In this case you check on the development system (W1D) the result of the keyfigu
 
 You have to set the Option EQ für Equal or NE for not equal. So you can check with this if even data is available for your selection.
 
-| MANDT | Workpackage | Number | InfoObject | Low Value | Type | Option | Sign | High Value |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| MANDT | Workpackage | Number | InfoObject | Low Value | Type | Option | Sign | High Value | Comment
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 010 | TM | 01 | ZZ_ADSO | ZZ_TM_ADSO1 | C | A | 
 | 010 | TM | 01 | ZZ_KEYFIGURE | 0AMOUNT | C |
 | 010 | TM | 01 | ZZ_RESULT_W1D | 0 | C | **NE** |
@@ -73,8 +73,8 @@ As sign you can choose between Include (I) and Exclude (E).
 
 Besides the check option you can also choose to compare a source with a target. For this use as type S or T.
 
-| MANDT | Workpackage | Number | InfoObject | Low Value | Type | Option | Sign | High Value |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| MANDT | Workpackage | Number | InfoObject | Low Value | Type | Option | Sign | High Value | Comment
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | 
 | 010 | TM | 02 | 0LGENT | 1234 | **S** | EQ | I |
 | 010 | TM | 02 | ZZ_ADSO | ZZ_ADSO1 | **S** | A |
 | 010 | TM | 02 | ZZ_KEYFIGURE | 0AMOUNT | **S** |
@@ -89,16 +89,16 @@ In this case the active table of the ADSO ZZ_ADSO1 with the legal entity 1234 wi
 
 You can also use hierarchies to filter your data. Here is how the entry must look like:
 
-| MANDT | Workpackage | Number | InfoObject | Low Value | Type | Option | Sign | High Value |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| MANDT | Workpackage | Number | InfoObject | Low Value | Type | Option | Sign | High Value | Comment
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 010 | TM | 03 | 0LGENT | ZH_0LGENT_WLRD | C | HI | I | EUROPE |
 
 In the low value you add the technical name of the hierarchy. As option you have to use **HI** and as high value the node you want to use. In my case we use the hierarchy **ZH_0LGENT_WRLD** with the node and children of **EUROPE**.
 
 You can also filter navigation and display attributes.
 
-| MANDT | Workpackage | Number | InfoObject | Low Value | Type | Option | Sign | High Value |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| MANDT | Workpackage | Number | InfoObject | Low Value | Type | Option | Sign | High Value | Comment
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 010 | TM | 03 | 0LGENT_ZREGION | USA | C | EQ | I | 
 
 There will be all legal entiies, which have an entry in the master data table (p-table) and an entry with USA as region (ZREGION) determine.
@@ -111,8 +111,8 @@ Besides the checking of data directly in ADSOs, you can also analyze data in que
 - ZZ_RESULT_(Q)
 - ZZ_RESULT_(P)
 
-| MANDT | Workpackage | Number | InfoObject | Low Value | Type | Option | Sign | High Value |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| MANDT | Workpackage | Number | InfoObject | Low Value | Type | Option | Sign | High Value | Comment
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 010 | TM | 04 | 0LGENT_ZREGION | USA | C | EQ | I | 
 | 010 | TM | 04 | ZZ_HCPR | Z_HCPR | C |
 | 010 | TM | 04 | ZZ_KEYFIGURE | VALUE | C |
