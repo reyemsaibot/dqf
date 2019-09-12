@@ -23,7 +23,7 @@ PUBLIC SECTION.
     BEGIN OF ty_grid,
           status     TYPE c LENGTH 4,
           wp         TYPE ty_wp,
-          num        TYPE int2,
+          testcase   TYPE int2,
           expected   TYPE string,
           result     TYPE string,
           s_comment  TYPE c LENGTH 60,
@@ -64,12 +64,58 @@ PUBLIC SECTION.
 
   CLASS-METHODS run
     IMPORTING
-      !i_wp TYPE tyt_wp
+      !i_ap TYPE tyt_wp
       !i_num TYPE tyt_num
       !i_mail TYPE boolean
       !i_mailaddress TYPE tyt_mailaddress .
 PROTECTED SECTION.
 PRIVATE SECTION.
+
+  TYPES:
+    BEGIN OF ty_dataelement,
+          iobjnm TYPE rsdiobjnm,
+          value  TYPE c LENGTH 1,
+         END OF ty_dataelement .
+  TYPES:
+    BEGIN OF ty_hierarchy,
+     hierarchy_node TYPE rshigh,
+     hierarchy      TYPE rshienm,
+     iobjnm         TYPE rsiobjnm,
+    END OF ty_hierarchy .
+  TYPES:
+    BEGIN OF ty_conditions,
+      lines  TYPE int2,
+      iobjnm TYPE rsiobjnm,
+      range  TYPE rsrange,
+    END OF ty_conditions .
+  TYPES:
+    BEGIN OF ty_table_result,
+      option  TYPE c LENGTH 2,
+      comment TYPE c LENGTH 60,
+      value   TYPE string,
+    END OF ty_table_result .
+  TYPES:
+    BEGIN OF ty_query_filter,
+      counter   TYPE int2,
+      keyfigure TYPE rschanm,
+      structure TYPE rschavl_maxlen,
+      testcase  TYPE ztm_dqf_cases,
+    END OF ty_query_filter .
+  TYPES:
+    BEGIN OF ty_query_keyfigure,
+      parameter TYPE ty_parameter,
+      counter   TYPE int2,
+    END OF ty_query_keyfigure .
+  TYPES:
+    BEGIN OF ty_result,
+      s_table       TYPE ty_dec_value,
+      s_datarows  TYPE p LENGTH 16 DECIMALS 0,
+      nums        TYPE ty_nums,
+      t_table       TYPE ty_dec_value,
+      t_datarows  TYPE p LENGTH 16 DECIMALS 0,
+      s_parameter   TYPE ty_parameter,
+      t_parameter   TYPE ty_parameter ,
+    END OF ty_result .
 
   CONSTANTS:
     gc_ne TYPE c LENGTH 2 VALUE 'NE' ##NO_TEXT.
@@ -100,13 +146,17 @@ PRIVATE SECTION.
   CLASS-DATA gex_semantics TYPE REF TO cx_sy_dynamic_osql_semantics .
   CLASS-DATA gex_table TYPE REF TO cx_sy_itab_line_not_found .
 
+  CLASS-METHODS prepare_data_query
+    IMPORTING
+      !i_query TYPE ty_query_keyfigure
+      !it_parameter_final TYPE rrxw3tquery
+    RETURNING
+      VALUE(e_value) TYPE ty_dec_value .
   CLASS-METHODS prepare_data
     IMPORTING
       !i_parameter TYPE ty_parameter
-      !it_wherecon TYPE tyt_wherecond OPTIONAL
-      !i_counter TYPE int2 OPTIONAL
+      !it_wherecon TYPE tyt_wherecond
       !i_nums TYPE ty_nums
-      !it_parameter_final TYPE rrxw3tquery OPTIONAL
     EXPORTING
       !e_datarows TYPE ty_dec0
     RETURNING
@@ -123,7 +173,7 @@ PRIVATE SECTION.
       !i_parameter TYPE ty_parameter
       !it_wherecon TYPE tyt_wherecond
     EXPORTING
-      !e_value TYPE TY_DEC_VALUE
+      !e_value TYPE ty_dec_value
       !e_datarows TYPE ty_dec0
     RAISING
       cx_sy_dynamic_osql_syntax
@@ -137,7 +187,6 @@ PRIVATE SECTION.
   CLASS-METHODS get_navigation_attribute
     IMPORTING
       !i_ztm_dqf_cases TYPE ztm_dqf_cases
-      !i_fieldnm TYPE rsdiobjnm
     RETURNING
       VALUE(et_values) TYPE tyt_string .
   CLASS-METHODS get_psa_table
@@ -172,42 +221,28 @@ PRIVATE SECTION.
       !i_nums TYPE ty_nums
       !i_iobjnm TYPE rsdiobjnm
       !it_ztm_dqf_cases TYPE tyt_ztm_dqf_cases
-    EXPORTING
-      !e_opt TYPE c
-      !e_comment TYPE string
     RETURNING
-      VALUE(e_value) TYPE string .
+      VALUE(e_value) TYPE ty_table_result .
   CLASS-METHODS get_query_filter
     IMPORTING
       !it_variable TYPE rsr_t_variable_definition OPTIONAL
-      !i_counter TYPE int2
-      !i_keyfigure TYPE rschanm OPTIONAL
-      !i_structure TYPE rschavl_maxlen OPTIONAL
-      !i_ztm_dqf_cases TYPE ztm_dqf_cases OPTIONAL
+      !i_query_filter TYPE ty_query_filter
     RETURNING
       VALUE(et_parameter) TYPE rrxw3tquery .
   CLASS-METHODS get_query_keyfigure
     IMPORTING
-      !i_parameter TYPE ty_parameter
-      !i_counter TYPE int2
+      !i_query_keyfigure TYPE ty_query_keyfigure
     RETURNING
       VALUE(et_parameter) TYPE rrxw3tquery .
   CLASS-METHODS get_query_result
     IMPORTING
       !i_parameter TYPE ty_parameter
       !it_parameter TYPE rrxw3tquery
-      !i_nums TYPE ty_nums
     RETURNING
       VALUE(e_cases) TYPE ty_dec_value .
   CLASS-METHODS get_result
     IMPORTING
-      !i_s_table TYPE ty_dec_value OPTIONAL
-      !i_s_datarows TYPE p OPTIONAL
-      !i_nums TYPE ty_nums
-      !i_t_table TYPE ty_dec_value OPTIONAL
-      !i_t_datarows TYPE p OPTIONAL
-      !i_s_parameter TYPE ty_parameter OPTIONAL
-      !i_t_parameter TYPE ty_parameter OPTIONAL
+      !i_result TYPE ty_result
     RETURNING
       VALUE(et_cases) TYPE tyt_grid .
   CLASS-METHODS get_singleentries
@@ -220,16 +255,13 @@ PRIVATE SECTION.
       VALUE(et_wherecond) TYPE tyt_wherecond .
   CLASS-METHODS read_query_definition
     IMPORTING
-      !i_parameter TYPE ty_parameter
-      !i_counter TYPE int2
+      !i_query TYPE ty_query_keyfigure
       !i_ztm_dqf_cases TYPE ztm_dqf_cases
     RETURNING
       VALUE(et_parameter) TYPE rrxw3tquery .
   CLASS-METHODS get_dataelement
     IMPORTING
-      !i_infoobject TYPE rsdiobjnm
-      !i_hierarchy TYPE boolean OPTIONAL
-      !i_masterdata TYPE boolean OPTIONAL
+      !i_dataelement TYPE ty_dataelement
     RETURNING
       VALUE(e_dataelement) TYPE string .
   CLASS-METHODS send_mail
@@ -239,22 +271,14 @@ PRIVATE SECTION.
   CLASS-METHODS get_condition
     IMPORTING
       !it_wherecond TYPE tyt_wherecond OPTIONAL
-      !i_sign TYPE rssign
-      !i_option TYPE rsoption
-      !i_low TYPE rslow
-      !i_high TYPE rshigh
-      !i_lines TYPE int2 OPTIONAL
-      !i_where_lines TYPE int2 OPTIONAL
-      !i_iobjnm TYPE rsiobjnm
+      !is_condition TYPE ty_conditions
     RETURNING
       VALUE(e_wherecond) TYPE string
     RAISING
       zcx_dqf_sign .
   CLASS-METHODS get_hierarchy_elements
     IMPORTING
-      !i_hierachy_node TYPE rshigh
-      !i_hierarchy TYPE rshienm
-      !i_infoobject TYPE rsiobjnm
+      !i_hierarchy_node TYPE ty_hierarchy
     RETURNING
       VALUE(e_flatlist) TYPE tyt_string
     RAISING
@@ -291,7 +315,7 @@ IF i_iobjnm CS '__'.
     CALL FUNCTION 'STRING_SPLIT_AT_POSITION'
       EXPORTING
         string  = lv_iobjnm
-        pos     = lv_pos + 2 "Offset für __
+        pos     = lv_pos + 2 "Offset for __
       IMPORTING
        string1  = lv_iobjnm
        string2  = lv_disattr.
@@ -356,7 +380,8 @@ METHOD create_wherecondition.
 DATA: lt_wherecond       TYPE tyt_wherecond,
       lv_counter         TYPE int2 VALUE 0,
       lt_parameter_final TYPE rrxw3tquery,
-      lv_hierarchy       TYPE rshienm.
+      ls_hierarchy       type ty_hierarchy,
+      ls_query           type ty_query_keyfigure.
 
 "Create the dynamic where condition
 LOOP AT it_ztm_dqf_cases ASSIGNING FIELD-SYMBOL(<ls_testing>) WHERE wp  = i_nums-wp AND
@@ -369,11 +394,12 @@ LOOP AT it_ztm_dqf_cases ASSIGNING FIELD-SYMBOL(<ls_testing>) WHERE wp  = i_nums
 
       "Check if it is a hierarchy
       IF <ls_testing>-opt = gc_hi.
-        lv_hierarchy = <ls_testing>-low.
         TRY.
-           DATA(lt_hierarchy) = get_hierarchy_elements( EXPORTING i_hierachy_node = <ls_testing>-high
-                                                                  i_hierarchy     = lv_hierarchy
-                                                                  i_infoobject    = <ls_testing>-iobjnm ).
+           ls_hierarchy-hierarchy      = <ls_testing>-low.
+           ls_hierarchy-hierarchy_node = <ls_testing>-high.
+           ls_hierarchy-iobjnm         = <ls_testing>-iobjnm.
+
+           DATA(lt_hierarchy) = get_hierarchy_elements( ls_hierarchy ).
         CATCH cx_rsr_hier_not_found INTO gex_hierarchy.
           gv_message = gex_hierarchy->get_text( ).
           MESSAGE gv_message TYPE 'E'.
@@ -388,8 +414,9 @@ LOOP AT it_ztm_dqf_cases ASSIGNING FIELD-SYMBOL(<ls_testing>) WHERE wp  = i_nums
     ELSE.
 
       lv_counter = lv_counter + 1.
-      DATA(lt_parameter) = read_query_definition( EXPORTING i_parameter     = i_parameter
-                                                            i_counter       = lv_counter
+      ls_query-counter   = lv_counter.
+      ls_query-parameter = i_parameter.
+      DATA(lt_parameter) = read_query_definition( EXPORTING i_query         = ls_query
                                                             i_ztm_dqf_cases = <ls_testing> ).
 
       APPEND LINES OF lt_parameter TO lt_parameter_final.
@@ -401,59 +428,60 @@ LOOP AT it_ztm_dqf_cases ASSIGNING FIELD-SYMBOL(<ls_testing>) WHERE wp  = i_nums
     ENDIF.
   ENDIF.
 ENDLOOP.
+
 ENDMETHOD.
 
 
-METHOD get_condition.
+METHOD GET_CONDITION.
 
 DATA: lv_wherecond TYPE ty_wherecond.
 
 "More than one entry and table is empty
-IF i_lines > 1 AND it_wherecond[] IS INITIAL.
-  lv_wherecond-wc = `( ` && i_iobjnm.
+IF is_condition-lines > 1 AND it_wherecond[] IS INITIAL.
+  lv_wherecond-wc = `( ` && is_condition-iobjnm.
   gv_bracket = rs_c_true.
   gv_count = gv_count + 1.
 "More than one entry but table is not empty
-ELSEIF i_lines > 1 AND it_wherecond[] IS NOT INITIAL AND gv_bracket = rs_c_false.
-  lv_wherecond-wc = `AND ( ` && i_iobjnm.
+ELSEIF is_condition-lines > 1 AND it_wherecond[] IS NOT INITIAL and gv_bracket = rs_c_false.
+  lv_wherecond-wc = `AND ( ` && is_condition-iobjnm.
   "Bracket open
   gv_bracket = rs_c_true.
   gv_count = gv_count + 1.
 "More than one entry and table is not empty and not all conditions are added
-ELSEIF i_lines > 1 AND it_wherecond[] IS NOT INITIAL AND gv_bracket = rs_c_true.
-  lv_wherecond-wc = ` OR ` && i_iobjnm.
+ELSEIF is_condition-lines > 1 AND it_wherecond[] IS NOT INITIAL AND gv_bracket = rs_c_true.
+  lv_wherecond-wc = ` OR ` && is_condition-iobjnm.
   gv_count = gv_count + 1.
 ELSEIF it_wherecond[] IS INITIAL.
-  lv_wherecond-wc = i_iobjnm.
+  lv_wherecond-wc = is_condition-iobjnm.
 ELSE.
-  lv_wherecond-wc = ` AND ` && i_iobjnm.
+  lv_wherecond-wc = ` AND ` && is_condition-iobjnm.
 ENDIF.
 
-*Conditions
-IF ( i_sign = 'I' AND i_option = gc_eq ) OR ( i_sign = 'E' AND i_option = gc_ne ).
-  lv_wherecond-wc = lv_wherecond-wc && ` = ` && '''' && i_low && ''''.
-ELSEIF ( i_sign = 'E' AND i_option = gc_eq ) OR ( i_sign = 'I' AND i_option = gc_ne ).
-  lv_wherecond-wc = lv_wherecond-wc && ` <> ` && '''' && i_low && ''''.
-ELSEIF ( i_sign = 'I' AND i_option = gc_bt ) OR ( i_sign = 'E' AND i_option = gc_nb ).
-  lv_wherecond-wc = lv_wherecond-wc && ` BETWEEN ` && '''' && i_low && '''' &&  ` AND ` && '''' && i_high && ''''.
-ELSEIF ( i_sign = 'E' AND i_option = gc_bt ) OR ( i_sign = 'I' AND i_option = gc_nb ).
-  lv_wherecond-wc = lv_wherecond-wc && ` NOT BETWEEN ` && '''' && i_low && '''' &&  ` AND ` && '''' && i_high && ''''.
-ELSEIF ( i_sign = 'I' AND i_option = gc_gt ) OR ( i_sign = 'E' AND i_option = gc_le ).
-  lv_wherecond-wc = lv_wherecond-wc && ` GT ` && '''' && i_low && ''''.
-ELSEIF ( i_sign = 'I' AND i_option = gc_le ) OR ( i_sign = 'E' AND i_option = gc_gt ) .
-  lv_wherecond-wc = lv_wherecond-wc && ` LE ` && '''' && i_low && ''''.
-ELSEIF ( i_sign = 'I' AND i_option = gc_ge ) OR ( i_sign = 'E' AND i_option = gc_lt ) .
-  lv_wherecond-wc = lv_wherecond-wc && ` GE ` && '''' && i_low && ''''.
-ELSEIF ( i_sign = 'I' AND i_option = gc_lt ) OR ( i_sign = 'E' AND i_option = gc_ge ) .
-  lv_wherecond-wc = lv_wherecond-wc && ` LT ` && '''' && i_low && ''''.
+"Conditions
+IF ( is_condition-range-sign = 'I' AND is_condition-range-option = gc_eq ) OR ( is_condition-range-sign = 'E' AND is_condition-range-option = gc_ne ).
+  lv_wherecond-wc = lv_wherecond-wc && ` = ` && '''' && is_condition-range-low && ''''.
+ELSEIF ( is_condition-range-sign = 'E' AND is_condition-range-option = gc_eq ) OR ( is_condition-range-sign = 'I' AND is_condition-range-option = gc_ne ).
+  lv_wherecond-wc = lv_wherecond-wc && ` <> ` && '''' && is_condition-range-low && ''''.
+ELSEIF ( is_condition-range-sign = 'I' AND is_condition-range-option = gc_bt ) OR ( is_condition-range-sign = 'E' AND is_condition-range-option = gc_nb ).
+  lv_wherecond-wc = lv_wherecond-wc && ` BETWEEN ` && '''' && is_condition-range-low && '''' &&  ` AND ` && '''' && is_condition-range-high && ''''.
+ELSEIF ( is_condition-range-sign = 'E' AND is_condition-range-option = gc_bt ) OR ( is_condition-range-sign = 'I' AND is_condition-range-option = gc_nb ).
+  lv_wherecond-wc = lv_wherecond-wc && ` NOT BETWEEN ` && '''' && is_condition-range-low && '''' &&  ` AND ` && '''' && is_condition-range-high && ''''.
+ELSEIF ( is_condition-range-sign = 'I' AND is_condition-range-option = gc_gt ) OR ( is_condition-range-sign = 'E' AND is_condition-range-option = gc_le ).
+  lv_wherecond-wc = lv_wherecond-wc && ` GT ` && '''' && is_condition-range-low && ''''.
+ELSEIF ( is_condition-range-sign = 'I' AND is_condition-range-option = gc_le ) OR ( is_condition-range-sign = 'E' AND is_condition-range-option = gc_gt ) .
+  lv_wherecond-wc = lv_wherecond-wc && ` LE ` && '''' && is_condition-range-low && ''''.
+ELSEIF ( is_condition-range-sign = 'I' AND is_condition-range-option = gc_ge ) OR ( is_condition-range-sign = 'E' AND is_condition-range-option = gc_lt ) .
+  lv_wherecond-wc = lv_wherecond-wc && ` GE ` && '''' && is_condition-range-low && ''''.
+ELSEIF ( is_condition-range-sign = 'I' AND is_condition-range-option = gc_lt ) OR ( is_condition-range-sign = 'E' AND is_condition-range-option = gc_ge ) .
+  lv_wherecond-wc = lv_wherecond-wc && ` LT ` && '''' && is_condition-range-low && ''''.
 ELSE.
   "Option and Sign not found
   RAISE EXCEPTION TYPE zcx_dqf_sign.
 ENDIF.
 
-IF i_lines = 1.
+IF is_condition-lines = 1.
   e_wherecond = lv_wherecond-wc.
-ELSEIF i_lines = gv_count AND gv_bracket = rs_c_true.
+elseif is_condition-lines = gv_count and gv_bracket = rs_c_true.
   e_wherecond = lv_wherecond-wc && ` )`.
   gv_bracket = rs_c_false.
   gv_count = 0.
@@ -470,9 +498,10 @@ TYPES: ty_wherecond TYPE STANDARD TABLE OF string WITH EMPTY KEY.
 
 DATA: lv_result_adso     TYPE REF TO data,
       lv_column_name     TYPE string,
-      lv_datarows        TYPE p DECIMALS 0.
+      lv_datarows        TYPE p DECIMALS 0,
+      ls_dataelement     TYPE ty_dataelement.
 
-FIELD-SYMBOLS: <fs_result_adso> TYPE ANY.
+FIELD-SYMBOLS: <fs_result_adso> TYPE any.
 
 TRY.
   DATA(lv_fieldnm) = check_iobj( i_parameter-keyfigure ).
@@ -481,7 +510,8 @@ CATCH cx_rsd_iobj_not_exist INTO gex_iobjnm.
   MESSAGE gv_message TYPE 'E'.
 ENDTRY.
 
-DATA(lv_type_keyfigure) = get_dataelement( lv_fieldnm ).
+ls_dataelement-iobjnm = lv_fieldnm.
+DATA(lv_type_keyfigure) = get_dataelement( ls_dataelement ).
 
 CREATE DATA lv_result_adso TYPE (lv_type_keyfigure).
 ASSIGN lv_result_adso->* TO <fs_result_adso>.
@@ -533,15 +563,15 @@ METHOD get_dataelement.
 
 DATA: lv_infoobject TYPE c LENGTH 20.
 
-lv_infoobject = i_infoobject.
+lv_infoobject = i_dataelement-iobjnm.
 
-IF i_hierarchy = rs_c_true.
+IF i_dataelement-value = 'H'.
   IF to_upper( lv_infoobject(5) ) = '/BIC/'.
     e_dataelement = '/BIC/WH' && lv_infoobject+5.
   ELSE.
     e_dataelement = '/BI0/WH' && lv_infoobject.
   ENDIF.
-ELSEIF i_masterdata = rs_c_true.
+ELSEIF i_dataelement-value = 'M'.
   IF to_upper( lv_infoobject(5) ) = '/BIC/'.
     e_dataelement = '/BIC/P' && lv_infoobject+5.
   ELSE.
@@ -550,7 +580,7 @@ ELSEIF i_masterdata = rs_c_true.
 ELSE.
   IF to_upper( lv_infoobject(5) ) = '/BIC/'.
     e_dataelement = '/BIC/OI' && lv_infoobject+5(10).
-  ELSE. "Standard SAP Objekte
+  ELSE. "Standard SAP Objects
     e_dataelement = '/BI0/OI' && lv_infoobject.
   ENDIF.
 ENDIF.
@@ -563,16 +593,18 @@ DATA: ls_rssh_hiedir TYPE rshiedir,
       lt_rssh_hiedir TYPE rssh_t_hiedir,
       ls_subtreesel  TYPE rssh_s_nodebyname,
       lt_hiestrucall TYPE REF TO data,
-      lv_iobjnm      TYPE rsiobjnm.
+      lv_iobjnm      TYPE rsiobjnm,
+      ls_dataelement type ty_dataelement.
 
 FIELD-SYMBOLS: <fs_node>        TYPE any,
                <ft_hiestrucall> TYPE ANY TABLE.
 
-DATA(lv_infoobject) = get_dataelement( EXPORTING i_infoobject  = i_infoobject
-                                                 i_hierarchy   = 'X' ).
+ls_dataelement-iobjnm =  i_hierarchy_node-iobjnm.
+ls_dataelement-value  = 'H'. "Hierarchy
+DATA(lv_infoobject) = get_dataelement( ls_dataelement ).
 
 lv_iobjnm = lv_infoobject+7.
-DATA(lv_fieldnm) = check_iobj( i_infoobject ).
+DATA(lv_fieldnm) = check_iobj( i_hierarchy_node-iobjnm ).
 
 CREATE DATA lt_hiestrucall TYPE (lv_fieldnm).
 ASSIGN lt_hiestrucall->* TO <ft_hiestrucall>.
@@ -590,19 +622,19 @@ CALL FUNCTION 'RSSH_HIER_OF_IOBJ_GET'
 CLEAR ls_rssh_hiedir.
 
 TRY.
-  ls_rssh_hiedir = lt_rssh_hiedir[ hienm   = i_hierarchy
+  ls_rssh_hiedir = lt_rssh_hiedir[ hienm   = i_hierarchy_node-hierarchy
                                    objvers = rs_c_objvers-active ].
 CATCH cx_sy_itab_line_not_found.
   "Hierarchy was not found
   RAISE EXCEPTION TYPE cx_rsr_hier_not_found.
 ENDTRY.
 
-* Sub-Zweig zum Knoten/Blatt lesen
+* Read sub node to leaf/node
 CLEAR: ls_subtreesel.
 ls_subtreesel-iobjnm   = lv_iobjnm.
-ls_subtreesel-nodename = i_hierachy_node.
+ls_subtreesel-nodename = i_hierarchy_node-hierarchy_node.
 
-* Keine Zeitabhängikeit der Hierarchie und auch keine Invervalle aktiv
+* No time dependency for hierarchy
 cl_rssh_hierarchy_func=>get( EXPORTING i_objvers       = rs_c_objvers-active
                                        i_hieid         = ls_rssh_hiedir-hieid
                                        i_s_subtreesel  = ls_subtreesel
@@ -622,9 +654,18 @@ DATA: lv_navattr           TYPE c LENGTH 20,
       lv_iobjnm            TYPE c LENGTH 30,
       lv_master_data_table TYPE string,
       lv_iobjnm_nav        TYPE rsdiobjnm,
-      lv_infoobject        TYPE REF TO data.
+      lv_infoobject        TYPE REF TO data,
+      ls_condition         type ty_conditions,
+      ls_dataelement       type ty_dataelement.
 
 FIELD-SYMBOLS: <fs_infoobject> TYPE ANY TABLE.
+
+TRY.
+  DATA(lv_fieldnm) = check_iobj( i_ztm_dqf_cases-iobjnm ).
+CATCH cx_rsd_iobj_not_exist INTO gex_iobjnm.
+  gv_message = gex_iobjnm->get_text( ).
+  MESSAGE gv_message TYPE 'E'.
+ENDTRY.
 
 IF i_ztm_dqf_cases-iobjnm CA '_'.
 
@@ -634,7 +675,7 @@ IF i_ztm_dqf_cases-iobjnm CA '_'.
   CALL FUNCTION 'STRING_SPLIT_AT_POSITION'
     EXPORTING
       string  = lv_iobjnm
-      pos     = lv_pos + 2 "Offset für __
+      pos     = lv_pos + 2 "Offset for __
     IMPORTING
      string1  = lv_iobjnm
      string2  = lv_navattr.
@@ -653,33 +694,37 @@ CATCH cx_rsd_iobj_not_exist INTO gex_iobjnm.
 ENDTRY.
 
 "Get Master Data Table
-lv_master_data_table = get_dataelement( EXPORTING i_infoobject  = i_fieldnm
-                                                  i_masterdata  = rs_c_true ).
+ls_dataelement-iobjnm = lv_fieldnm.
+ls_dataelement-value  = 'M'. "Masterdata
+lv_master_data_table = get_dataelement( ls_dataelement ).
 
-DATA(lv_dataelement) = get_dataelement( i_fieldnm ).
+ls_dataelement-value = ''.
+DATA(lv_dataelement) = get_dataelement( ls_dataelement ).
 CREATE DATA lv_infoobject TYPE TABLE OF (lv_dataelement).
 ASSIGN lv_infoobject->* TO <fs_infoobject>.
 
 IF sy-subrc EQ 0.
   TRY.
-    DATA(lv_wherecond) = get_condition( EXPORTING i_sign        = i_ztm_dqf_cases-sign
-                                                  i_option      = i_ztm_dqf_cases-opt
-                                                  i_low         = i_ztm_dqf_cases-low
-                                                  i_high        = i_ztm_dqf_cases-high
-                                                  i_iobjnm      = lv_iobjnm_nav ).
+    ls_condition-range-sign   = i_ztm_dqf_cases-sign.
+    ls_condition-range-option = i_ztm_dqf_cases-opt.
+    ls_condition-range-low    = i_ztm_dqf_cases-low.
+    ls_condition-range-high   = i_ztm_dqf_cases-high.
+    ls_condition-iobjnm       = lv_iobjnm_nav.
+
+    DATA(lv_wherecond) = get_condition( ls_condition ).
   CATCH zcx_dqf_sign INTO gex_sign.
     gv_message = gex_sign->get_text( ).
     MESSAGE gv_message TYPE 'E'.
   ENDTRY.
 
   TRY.
-    SELECT (i_fieldnm)
+    SELECT (lv_fieldnm)
       FROM (lv_master_data_table)
       INTO TABLE <fs_infoobject>
       WHERE (lv_wherecond). "#EC CI_SEL_NESTED
     et_values = <fs_infoobject>.
   CATCH cx_sy_dynamic_osql_syntax.
-    gv_message = `The Where Condition in Testcase ` && i_ztm_dqf_cases-num && ` of AP ` && i_ztm_dqf_cases-wp && ` is incorrect.`.
+    gv_message = `The Where Condition in Testcase ` && i_ztm_dqf_cases-num && ` of wp ` && i_ztm_dqf_cases-wp && ` is incorrect.`.
     MESSAGE gv_message TYPE 'E'.
   ENDTRY.
 ENDIF.
@@ -699,39 +744,39 @@ lv_layout-colwidth_optimize  = 'X'.
 
 *Create field catalog
 ls_fieldcat-fieldname = 'STATUS'.
-ls_fieldcat-seltext_m = TEXT-001.
+ls_fieldcat-seltext_m = text-001.
 APPEND ls_fieldcat TO lt_fieldcat.
 
-ls_fieldcat-fieldname = 'AP'.
-ls_fieldcat-seltext_m = TEXT-003.
+ls_fieldcat-fieldname = 'wp'.
+ls_fieldcat-seltext_m = text-003.
 APPEND ls_fieldcat TO lt_fieldcat.
 
 ls_fieldcat-fieldname = 'TESTCASE'.
-ls_fieldcat-seltext_m = TEXT-004.
+ls_fieldcat-seltext_m = text-004.
 APPEND ls_fieldcat TO lt_fieldcat.
 
 ls_fieldcat-fieldname = 'EXPECTED'.
-ls_fieldcat-seltext_m = TEXT-005.
+ls_fieldcat-seltext_m = text-005.
 APPEND ls_fieldcat TO lt_fieldcat.
 
 ls_fieldcat-fieldname = 'RESULT'.
-ls_fieldcat-seltext_m = TEXT-006.
+ls_fieldcat-seltext_m = text-006.
 APPEND ls_fieldcat TO lt_fieldcat.
 
 ls_fieldcat-fieldname = 'S_COMMENT'.
-ls_fieldcat-seltext_m = TEXT-007.
+ls_fieldcat-seltext_m = text-007.
 APPEND ls_fieldcat TO lt_fieldcat.
 
 ls_fieldcat-fieldname = 'S_DATAROWS'.
-ls_fieldcat-seltext_m = TEXT-008.
+ls_fieldcat-seltext_m = text-008.
 APPEND ls_fieldcat TO lt_fieldcat.
 
 ls_fieldcat-fieldname = 'T_COMMENT'.
-ls_fieldcat-seltext_m = TEXT-009.
+ls_fieldcat-seltext_m = text-009.
 APPEND ls_fieldcat TO lt_fieldcat.
 
 ls_fieldcat-fieldname = 'T_DATAROWS'.
-ls_fieldcat-seltext_m = TEXT-010.
+ls_fieldcat-seltext_m = text-010.
 APPEND ls_fieldcat TO lt_fieldcat.
 
 CLEAR: ls_fieldcat.
@@ -748,50 +793,61 @@ ENDMETHOD.
 
 METHOD get_parameters.
 
-DATA: lv_opt TYPE c LENGTH 2.
+DATA: ls_table_result TYPE ty_table_result.
 
 "Check if Query or ADSO Result
-e_parameter-query = read_table( EXPORTING i_nums           = i_nums
-                                          i_iobjnm         = 'ZZ_QUERY'
-                                          it_ztm_dqf_cases = it_ztm_dqf_cases ).
+ls_table_result = read_table( EXPORTING i_nums           = i_nums
+                                        i_iobjnm         = 'ZZ_QUERY'
+                                        it_ztm_dqf_cases = it_ztm_dqf_cases ).
 
-e_parameter-keyfigure = read_table( EXPORTING i_nums           = i_nums
-                                              i_iobjnm         = 'ZZ_KEYFIGURE'
-                                              it_ztm_dqf_cases = it_ztm_dqf_cases ).
+e_parameter-query = ls_table_result-value.
+
+ls_table_result = read_table( EXPORTING i_nums           = i_nums
+                                        i_iobjnm         = 'ZZ_KEYFIGURE'
+                                        it_ztm_dqf_cases = it_ztm_dqf_cases ).
+
+e_parameter-keyfigure = ls_table_result-value.
 
 IF e_parameter-query = ''.
 
-  DATA(lv_adso) = read_table( EXPORTING i_nums           = i_nums
-                                        i_iobjnm         = 'ZZ_ADSO'
-                                        it_ztm_dqf_cases = it_ztm_dqf_cases
-                              IMPORTING e_comment        = e_parameter-comment
-                                        e_opt            = lv_opt ).
+  ls_table_result = read_table( EXPORTING i_nums           = i_nums
+                                          i_iobjnm         = 'ZZ_ADSO'
+                                          it_ztm_dqf_cases = it_ztm_dqf_cases ).
 
-  IF lv_opt = 'A'. "Active Table
-      e_parameter-table = '/BIC/A' && lv_adso && '2'.
-  ELSEIF lv_opt = 'I'. "Inbound Table
-      e_parameter-table = '/BIC/A' && lv_adso && '1'.
-  ELSEIF lv_opt = 'P'. "PSA Table
-    e_parameter-table = get_psa_table( lv_adso ).
+  e_parameter-comment = ls_table_result-comment.
+
+  IF ls_table_result-option = 'A'. "Active Table
+    e_parameter-table = '/BIC/A' && ls_table_result-value && '2'.
+  ELSEIF ls_table_result-option = 'I'. "Inbound Table
+    e_parameter-table = '/BIC/A' && ls_table_result-value && '1'.
+  ELSEIF ls_table_result-option = 'P'. "PSA Table
+    e_parameter-table = get_psa_table( ls_table_result-value ).
   ENDIF.
 
 ELSE.
 
-  e_parameter-hcpr = read_table( EXPORTING i_nums           = i_nums
-                                           i_iobjnm         = 'ZZ_HCPR'
-                                           it_ztm_dqf_cases = it_ztm_dqf_cases
-                                 IMPORTING e_comment        = e_parameter-comment ).
+  ls_table_result = read_table( EXPORTING i_nums           = i_nums
+                                          i_iobjnm         = 'ZZ_HCPR'
+                                          it_ztm_dqf_cases = it_ztm_dqf_cases ).
+
+  e_parameter-hcpr = ls_table_result-value.
+  e_parameter-comment = ls_table_result-comment.
 
 ENDIF.
 
-e_parameter-result_expected = read_table( EXPORTING i_nums           = i_nums
-                                                    i_iobjnm         = 'ZZ_RESULT' && '_' && sy-sysid
-                                                    it_ztm_dqf_cases = it_ztm_dqf_cases
-                                          IMPORTING e_opt            = e_parameter-result_opt ).
+ls_table_result = read_table( EXPORTING i_nums           = i_nums
+                                        i_iobjnm         = 'ZZ_RESULT' && '_' && sy-sysid
+                                        it_ztm_dqf_cases = it_ztm_dqf_cases ).
 
- e_parameter-factor = read_table( EXPORTING i_nums           = i_nums
-                                            i_iobjnm         = 'ZZ_FACTOR'
-                                            it_ztm_dqf_cases = it_ztm_dqf_cases ).
+e_parameter-result_expected = ls_table_result-value.
+e_parameter-result_opt      = ls_table_result-option.
+
+ls_table_result = read_table( EXPORTING i_nums           = i_nums
+                                        i_iobjnm         = 'ZZ_FACTOR'
+                                        it_ztm_dqf_cases = it_ztm_dqf_cases ).
+
+e_parameter-factor = ls_table_result-value.
+
 ENDMETHOD.
 
 
@@ -822,43 +878,43 @@ DATA: ls_parameter TYPE w3query,
 "Skip hierarchy variables
 DATA(lt_variable) = VALUE ty_variable( FOR <ls_variable> IN it_variable WHERE ( vartyp <> '5' ) ( <ls_variable> ) ).
 
-IF line_exists( lt_variable[ iobjnm = i_ztm_dqf_cases-iobjnm ] ).
+IF line_exists( lt_variable[ iobjnm = i_query_filter-testcase-iobjnm ] ).
 
-  data(ls_variable) = lt_variable[ iobjnm = i_ztm_dqf_cases-iobjnm ].
+  DATA(ls_variable) = lt_variable[ iobjnm = i_query_filter-testcase-iobjnm ].
 
-  ls_parameter-name  = 'VAR_SIGN_' && i_counter.
-  ls_parameter-value = i_ztm_dqf_cases-sign.
-
-  APPEND ls_parameter TO lt_parameter.
-
-  ls_parameter-name  = 'VAR_OPERATOR_' && i_counter.
-  ls_parameter-value = i_ztm_dqf_cases-opt.
+  ls_parameter-name  = 'VAR_SIGN_' && i_query_filter-counter.
+  ls_parameter-value = i_query_filter-testcase-sign.
 
   APPEND ls_parameter TO lt_parameter.
 
-  IF i_ztm_dqf_cases-opt = gc_eq.
+  ls_parameter-name  = 'VAR_OPERATOR_' && i_query_filter-counter.
+  ls_parameter-value = i_query_filter-testcase-opt.
+
+  APPEND ls_parameter TO lt_parameter.
+
+  IF i_query_filter-testcase-opt = gc_eq.
 
     "Hierarchy Node
     IF ls_variable-vartyp = '2'.
-      ls_parameter-name  = 'VAR_VALUE_EXT_' && i_counter.
+      ls_parameter-name  = 'VAR_VALUE_EXT_' && i_query_filter-counter.
     ELSE.
-      ls_parameter-name  = 'VAR_VALUE_LOW_EXT_' && i_counter.
+      ls_parameter-name  = 'VAR_VALUE_LOW_EXT_' && i_query_filter-counter.
     ENDIF.
-    ls_parameter-value = i_ztm_dqf_cases-low.
+    ls_parameter-value = i_query_filter-testcase-low.
     APPEND ls_parameter TO lt_parameter.
 
-  ELSEIF i_ztm_dqf_cases-opt = 'BT'.
+  ELSEIF i_query_filter-testcase-opt = 'BT'.
 
-    ls_parameter-name  = 'VAR_VALUE_LOW_EXT_' && i_counter.
-    ls_parameter-value = i_ztm_dqf_cases-low.
+    ls_parameter-name  = 'VAR_VALUE_LOW_EXT_' && i_query_filter-counter.
+    ls_parameter-value = i_query_filter-testcase-low.
     APPEND ls_parameter TO lt_parameter.
-    ls_parameter-name  = 'VAR_VALUE_HIGH_EXT_' && i_counter.
-    ls_parameter-value = i_ztm_dqf_cases-high.
+    ls_parameter-name  = 'VAR_VALUE_HIGH_EXT_' && i_query_filter-counter.
+    ls_parameter-value = i_query_filter-testcase-high.
     APPEND ls_parameter TO lt_parameter.
 
   ENDIF.
 
-  ls_parameter-name  = 'VAR_NAME_' && i_counter.
+  ls_parameter-name  = 'VAR_NAME_' && i_query_filter-counter.
   ls_parameter-value = ls_variable-vnam.
   APPEND ls_parameter TO lt_parameter.
 
@@ -866,21 +922,21 @@ ELSE.
 
   "Create filter if there is no variable
   "Filter values can only be single values with Include
-  ls_parameter-name  = 'FILTER_IOBJNM_' && i_counter.
+  ls_parameter-name  = 'FILTER_IOBJNM_' && i_query_filter-counter.
 
-  IF i_ztm_dqf_cases IS INITIAL.
-    ls_parameter-value = i_structure.
+  IF i_query_filter-testcase IS INITIAL.
+    ls_parameter-value = i_query_filter-structure.
   ELSE.
-    ls_parameter-value = i_ztm_dqf_cases-iobjnm.
+    ls_parameter-value = i_query_filter-testcase-iobjnm.
   ENDIF.
 
   APPEND ls_parameter TO lt_parameter.
-  ls_parameter-name  = 'FILTER_VALUE_' && i_counter.
+  ls_parameter-name  = 'FILTER_VALUE_' && i_query_filter-counter.
 
-  IF i_ztm_dqf_cases IS INITIAL.
-    ls_parameter-value = i_keyfigure.
+  IF i_query_filter-testcase IS INITIAL.
+    ls_parameter-value = i_query_filter-keyfigure.
   ELSE.
-    ls_parameter-value = i_ztm_dqf_cases-low.
+    ls_parameter-value = i_query_filter-testcase-low.
   ENDIF.
   APPEND ls_parameter TO lt_parameter.
 
@@ -893,13 +949,14 @@ ENDMETHOD.
 
 METHOD get_query_keyfigure.
 
-DATA: lt_columns   TYPE TABLE OF rrx_x_axis_data,
-      lv_keyfigure TYPE c LENGTH 20.
+DATA: lt_columns      TYPE TABLE OF rrx_x_axis_data,
+      lv_keyfigure    TYPE c LENGTH 20,
+      ls_query_filter TYPE ty_query_filter.
 
 CALL FUNCTION 'RS_VC_GET_QUERY_VIEW_DATA_FLAT'
   EXPORTING
-    i_infoprovider                = i_parameter-hcpr
-    i_query                       = i_parameter-query
+    i_infoprovider                = i_query_keyfigure-parameter-hcpr
+    i_query                       = i_query_keyfigure-parameter-query
   TABLES
     e_t_axis_data_columns         = lt_columns
   EXCEPTIONS
@@ -918,10 +975,11 @@ ENDIF.
 ASSIGN lt_columns[ 1 ] TO FIELD-SYMBOL(<ls_columns>).
 IF sy-subrc EQ 0.
   TRY.
-    <ls_columns> = lt_columns[ caption = to_mixed( i_parameter-keyfigure ) ].
-    et_parameter = get_query_filter( EXPORTING i_counter       = i_counter
-                                               i_structure     = <ls_columns>-chavl
-                                               i_keyfigure     = <ls_columns>-chanm ).
+    <ls_columns> = lt_columns[ caption = to_mixed( i_query_keyfigure-parameter-keyfigure ) ].
+    ls_query_filter-counter   = i_query_keyfigure-counter.
+    ls_query_filter-structure = <ls_columns>-chavl.
+    ls_query_filter-keyfigure = <ls_columns>-chanm.
+    et_parameter = get_query_filter( ls_query_filter ).
   CATCH cx_sy_itab_line_not_found INTO gex_table.
     gv_message = gex_table->get_text( ).
     MESSAGE gv_message TYPE 'E'.
@@ -973,14 +1031,14 @@ DATA: lv_s_result_value TYPE ty_dec_value,
       lv_case           TYPE ty_grid.
 
 "If there is a Source / Target Case
-IF i_s_table IS NOT INITIAL.
+IF i_result-s_table IS NOT INITIAL.
 
-  IF i_s_parameter-factor NE ''.
-    lv_s_result_value = cl_java_script=>create( )->evaluate( 'eval( ' && i_s_table && i_s_parameter-factor && ' );' ).
+  IF i_result-s_parameter-factor NE ''.
+    lv_s_result_value = cl_java_script=>create( )->evaluate( 'eval( ' && i_result-s_table && i_result-s_parameter-factor && ' );' ).
   ENDIF.
 
-  IF i_t_parameter-factor NE ''.
-    lv_t_result_value = cl_java_script=>create( )->evaluate( 'eval( ' && i_t_table && i_t_parameter-factor && ' );' ).
+  IF i_result-t_parameter-factor NE ''.
+    lv_t_result_value = cl_java_script=>create( )->evaluate( 'eval( ' && i_result-t_table && i_result-t_parameter-factor && ' );' ).
   ENDIF.
 
   IF lv_s_result_value = lv_t_result_value.
@@ -991,21 +1049,21 @@ IF i_s_table IS NOT INITIAL.
 
 ELSE.
 
-  lv_s_result_value = i_t_parameter-result_expected.
-  lv_t_result_value = i_t_table.
+  lv_s_result_value = i_result-t_parameter-result_expected.
+  lv_t_result_value = i_result-t_table.
 
-  IF i_t_parameter-factor NE ''.
-    lv_t_result_value = cl_java_script=>create( )->evaluate( 'eval( ' && i_t_table && i_t_parameter-factor && ' );' ).
+  IF i_result-t_parameter-factor NE ''.
+    lv_t_result_value = cl_java_script=>create( )->evaluate( 'eval( ' && i_result-t_table && i_result-t_parameter-factor && ' );' ).
   ENDIF.
 
   "Check option of zz_result
-  IF i_t_parameter-result_opt = gc_eq.
+  IF i_result-t_parameter-result_opt = gc_eq.
     IF lv_s_result_value = lv_t_result_value.
       lv_flag = rs_c_true.
     ELSE.
       lv_flag = rs_c_false.
     ENDIF.
-  ELSEIF i_t_parameter-result_opt = gc_ne.
+  ELSEIF i_result-t_parameter-result_opt = gc_ne.
     IF lv_s_result_value <> lv_t_result_value.
       lv_flag = rs_c_true.
     ELSE.
@@ -1018,31 +1076,32 @@ ENDIF.
 IF lv_flag = rs_c_true.
 
    lv_case-status     = '@08@'.
-   lv_case-wp         = i_nums-wp.
-   lv_case-num        = i_nums-num.
-   lv_case-s_comment  = i_s_parameter-comment .
-   lv_case-t_comment  = i_t_parameter-comment.
-   lv_case-s_datarows = i_s_datarows .
-   lv_case-t_datarows = i_t_datarows.
+   lv_case-wp         = i_result-nums-wp.
+   lv_case-testcase   = i_result-nums-num.
+   lv_case-s_comment  = i_result-s_parameter-comment .
+   lv_case-t_comment  = i_result-t_parameter-comment.
+   lv_case-s_datarows = i_result-s_datarows .
+   lv_case-t_datarows = i_result-t_datarows.
 
    APPEND lv_case TO lt_case.
 
  ELSE.
 
    lv_case-status     = '@0A@'.
-   lv_case-wp         = i_nums-wp.
-   lv_case-num        = i_nums-num.
-   lv_case-s_comment  = i_s_parameter-comment.
-   lv_case-t_comment  = i_t_parameter-comment.
+   lv_case-wp         = i_result-nums-wp.
+   lv_case-testcase   = i_result-nums-num.
+   lv_case-s_comment  = i_result-s_parameter-comment.
+   lv_case-t_comment  = i_result-t_parameter-comment.
    lv_case-expected   = lv_s_result_value.
    lv_case-result     = lv_t_result_value.
-   lv_case-s_datarows = i_s_datarows .
-   lv_case-t_datarows = i_t_datarows.
+   lv_case-s_datarows = i_result-s_datarows .
+   lv_case-t_datarows = i_result-t_datarows.
    APPEND lv_case TO lt_case.
 
 ENDIF.
 
 et_cases = lt_case.
+
 ENDMETHOD.
 
 
@@ -1051,7 +1110,8 @@ METHOD get_singleentries.
 DATA: lv_lines        TYPE int2,
       lv_where_lines  TYPE int2,
       lv_low          TYPE rslow,
-      lv_wherecond    TYPE ty_wherecond.
+      lv_wherecond    TYPE ty_wherecond,
+      ls_condition    type ty_conditions.
 
 DATA(lt_wherecond) = it_wherecond.
 
@@ -1068,11 +1128,8 @@ ENDTRY.
 
 "Get Entries for Navigation Attributes
 IF i_ztm_dqf_cases-iobjnm CS '__'.
-  DATA(lt_values) = get_navigation_attribute( EXPORTING i_ztm_dqf_cases = i_ztm_dqf_cases
-                                                        i_fieldnm       = lv_fieldnm ).
+  DATA(lt_values) = get_navigation_attribute( i_ztm_dqf_cases ).
 ENDIF.
-
-DESCRIBE TABLE lt_wherecond LINES lv_where_lines.
 
 "Check if a hierarchy exists
 IF it_hierachy[] IS NOT INITIAL.
@@ -1088,14 +1145,16 @@ IF lt_values[] IS NOT INITIAL.
     DESCRIBE TABLE lt_wherecond LINES lv_where_lines.
     lv_low = <ls_values>.
     TRY.
-      lv_wherecond-wc = get_condition( EXPORTING i_sign        = i_ztm_dqf_cases-sign
-                                                 i_option      = gc_eq
-                                                 i_low         = lv_low
-                                                 i_high        = ''
-                                                 i_lines       = lv_lines
-                                                 i_where_lines = lv_where_lines
-                                                 it_wherecond  = lt_wherecond
-                                                 i_iobjnm      = lv_fieldnm ).
+
+      ls_condition-lines                = lv_lines.
+      ls_condition-iobjnm               = lv_fieldnm.
+      ls_condition-range-sign           = i_ztm_dqf_cases-sign.
+      ls_condition-range-option         = gc_eq.
+      ls_condition-range-low            = lv_low.
+      ls_condition-range-high           = ''.
+
+      lv_wherecond-wc = get_condition( EXPORTING is_condition  = ls_condition
+                                                 it_wherecond  = lt_wherecond ).
     CATCH zcx_dqf_sign INTO gex_sign.
       gv_message = gex_sign->get_text( ).
       MESSAGE gv_message TYPE 'E'.
@@ -1107,14 +1166,15 @@ IF lt_values[] IS NOT INITIAL.
 
 ELSE.
   TRY.
-   lv_wherecond-wc = get_condition( EXPORTING i_sign        = i_ztm_dqf_cases-sign
-                                              i_option      = i_ztm_dqf_cases-opt
-                                              i_low         = i_ztm_dqf_cases-low
-                                              i_high        = i_ztm_dqf_cases-high
-                                              i_lines       = lv_lines
-                                              i_where_lines = lv_where_lines
-                                              it_wherecond  = it_wherecond
-                                              i_iobjnm      = lv_fieldnm ).
+    ls_condition-lines                = lv_lines.
+    ls_condition-iobjnm               = lv_fieldnm.
+    ls_condition-range-sign           = i_ztm_dqf_cases-sign.
+    ls_condition-range-option         = i_ztm_dqf_cases-opt.
+    ls_condition-range-low            = i_ztm_dqf_cases-low.
+    ls_condition-range-high           = i_ztm_dqf_cases-high.
+
+    lv_wherecond-wc = get_condition( EXPORTING is_condition  = ls_condition
+                                               it_wherecond  = it_wherecond ).
   CATCH zcx_dqf_sign INTO gex_sign.
     gv_message = gex_sign->get_text( ).
     MESSAGE gv_message TYPE 'E'.
@@ -1139,29 +1199,39 @@ DATA: lv_s_result_opt    TYPE c LENGTH 2,
       lt_t_value         TYPE ty_dec_value,
       lv_t_datarows      TYPE ty_dec0,
 
-      lt_case_final      TYPE tyt_grid.
+      lt_case_final      TYPE tyt_grid,
+      ls_result          TYPE ty_result,
+
+      ls_s_query         TYPE ty_query_keyfigure,
+      ls_t_query         TYPE ty_query_keyfigure.
 
 "Check flag for no entries
-data(lv_flag) = rs_c_true.
+DATA(lv_flag) = rs_c_true.
 
 get_type( EXPORTING it_ztm_dqf_cases   = it_ztm_dqf_cases
-          IMPORTING et_s_ztm_dqf_cases = data(lt_s_ztm_dqf_cases)
-                    et_t_ztm_dqf_cases = data(lt_t_ztm_dqf_cases) ).
+          IMPORTING et_s_ztm_dqf_cases = DATA(lt_s_ztm_dqf_cases)
+                    et_t_ztm_dqf_cases = DATA(lt_t_ztm_dqf_cases) ).
 
 LOOP AT it_nums ASSIGNING FIELD-SYMBOL(<fs_num>).
 
   "There is a Source / Target to check
   IF lt_s_ztm_dqf_cases[] IS NOT INITIAL.
-    DATA(ls_s_parameter) = get_parameters( EXPORTING it_ztm_dqf_cases  = lt_s_ztm_dqf_cases
-                                                     i_nums            = <fs_num> ).
-    create_wherecondition( EXPORTING it_ztm_dqf_cases = lt_s_ztm_dqf_cases
-                                     i_parameter      = ls_s_parameter
-                                     i_nums           = <fs_num>
-                                     it_wherecond     = lt_s_wherecond
-                           IMPORTING et_parameter     = DATA(lt_s_parameter_final)
-                                     e_counter        = DATA(lv_s_counter)
-                                     et_wherecond     = lt_s_wherecond ).
-    lv_flag = rs_c_false.
+    "Check if testcase is a source / target case and not only a check case.
+    TRY.
+      DATA(testcase_is_s_t) = lt_s_ztm_dqf_cases[ num = <fs_num>-num type = 'S' ].
+      DATA(ls_s_parameter) = get_parameters( EXPORTING it_ztm_dqf_cases  = lt_s_ztm_dqf_cases
+                                                       i_nums            = <fs_num> ).
+      create_wherecondition( EXPORTING it_ztm_dqf_cases = lt_s_ztm_dqf_cases
+                                       i_parameter      = ls_s_parameter
+                                       i_nums           = <fs_num>
+                                       it_wherecond     = lt_s_wherecond
+                             IMPORTING et_parameter     = DATA(lt_s_parameter_final)
+                                       e_counter        = DATA(lv_s_counter)
+                                       et_wherecond     = lt_s_wherecond ).
+      lv_flag = rs_c_false.
+    CATCH cx_sy_itab_line_not_found.
+      "This testcase has no source / target case.
+    ENDTRY.
   ENDIF.
 
   IF lt_t_ztm_dqf_cases[] IS NOT INITIAL.
@@ -1183,38 +1253,44 @@ LOOP AT it_nums ASSIGNING FIELD-SYMBOL(<fs_num>).
 
   "Check for Source Options
   IF lt_s_ztm_dqf_cases[] IS NOT INITIAL.
-    IF ls_s_parameter-query = ''.
-      lt_s_value = prepare_data( EXPORTING i_parameter = ls_s_parameter
-                                           it_wherecon = lt_s_wherecond
-                                           i_nums      = <fs_num>
-                                 IMPORTING e_datarows  = lv_s_datarows ).
-    ELSE.
-      lt_s_value = prepare_data( EXPORTING i_parameter        = ls_s_parameter
-                                           i_counter          = lv_s_counter
-                                           i_nums             = <fs_num>
-                                           it_parameter_final = lt_s_parameter_final ).
-    ENDIF.
+     TRY.
+      testcase_is_s_t = lt_s_ztm_dqf_cases[ num = <fs_num>-num type = 'S' ].
+      IF ls_s_parameter-query = ''.
+        lt_s_value = prepare_data( EXPORTING i_parameter = ls_s_parameter
+                                             it_wherecon = lt_s_wherecond
+                                             i_nums      = <fs_num>
+                                   IMPORTING e_datarows  = lv_s_datarows ).
+      ELSE.
+        ls_s_query-counter  = lv_s_counter.
+        ls_s_query-parameter = ls_s_parameter.
+        lt_s_value = prepare_data_query( EXPORTING i_query            = ls_s_query
+                                                   it_parameter_final = lt_s_parameter_final ).
+      ENDIF.
+    CATCH cx_sy_itab_line_not_found.
+      "This testcase has no source / target case.
+    ENDTRY.
   ENDIF.
 
   "Check for Target Options
   IF ls_t_parameter-query = ''.
     lt_t_value = prepare_data( EXPORTING i_parameter = ls_t_parameter
                                          it_wherecon = lt_t_wherecond
-                                         i_nums        = <fs_num>
-                               IMPORTING e_datarows    = lv_t_datarows ).
+                                         i_nums      = <fs_num>
+                               IMPORTING e_datarows  = lv_t_datarows ).
   ELSE.
-    lt_t_value = prepare_data( EXPORTING i_parameter        = ls_t_parameter
-                                         i_counter          = lv_t_counter
-                                         i_nums             = <fs_num>
-                                         it_parameter_final = lt_t_parameter_final ).
+    ls_t_query-counter   = lv_t_counter.
+    ls_t_query-parameter = ls_t_parameter.
+    lt_t_value = prepare_data_query( EXPORTING i_query            = ls_t_query
+                                               it_parameter_final = lt_t_parameter_final ).
   ENDIF.
-  DATA(lt_case) = get_result( EXPORTING i_s_table     = lt_s_value
-                                        i_s_datarows  = lv_s_datarows
-                                        i_nums        = <fs_num>
-                                        i_t_table     = lt_t_value
-                                        i_t_datarows  = lv_t_datarows
-                                        i_s_parameter = ls_s_parameter
-                                        i_t_parameter = ls_t_parameter ).
+  ls_result-s_table     = lt_s_value.
+  ls_result-s_datarows  = lv_s_datarows.
+  ls_result-s_parameter = ls_s_parameter.
+  ls_result-nums        = <fs_num>.
+  ls_result-t_table     = lt_t_value.
+  ls_result-t_datarows  = lv_t_datarows.
+  ls_result-t_parameter = ls_t_parameter.
+  DATA(lt_case) = get_result( ls_result ).
 
   APPEND LINES OF lt_case TO lt_case_final.
   "Delete Variable for other Testcases
@@ -1234,51 +1310,52 @@ et_s_ztm_dqf_cases = VALUE tyt_s_ztm_dqf_cases( FOR <ls_ztm_dqf_cases> IN it_ztm
                                                 WHERE ( type = 'S' ) ( <ls_ztm_dqf_cases> ) ).
 
 et_t_ztm_dqf_cases = VALUE tyt_t_ztm_dqf_cases( FOR <ls_ztm_dqf_cases> IN it_ztm_dqf_cases
-                                                WHERE ( type = 'T' OR type = 'C' ) ( <ls_ztm_dqf_cases> ) ).
+                                                WHERE ( type = 'T' or type = 'C' ) ( <ls_ztm_dqf_cases> ) ).
 ENDMETHOD.
 
 
 METHOD prepare_data.
+TRY.
+  get_data( EXPORTING i_parameter = i_parameter
+                      it_wherecon = it_wherecon
+            IMPORTING e_value     = e_value
+                      e_datarows  = e_datarows ).
+CATCH zcx_dqf_adso INTO gex_adso.
+   gv_message = gex_adso->get_text( ).
+   MESSAGE gv_message TYPE 'E'.
+CATCH cx_sy_dynamic_osql_syntax INTO gex_syntax.
+   gv_message = `The Where Condition in Testcase ` && i_nums-num && ` of wp ` && i_nums-wp && ` is incorrect.`.
+   MESSAGE gv_message TYPE 'E'.
+ENDTRY.
+ENDMETHOD.
+
+
+METHOD PREPARE_DATA_QUERY.
 
 DATA: lv_counter         TYPE int2,
-      lt_parameter_final TYPE rrxw3tquery.
+      lt_parameter_final TYPE rrxw3tquery,
+      ls_query_keyfigure type ty_query_keyfigure.
 
-"No Query
-IF i_parameter-query EQ ''.
-  TRY.
-    get_data( EXPORTING i_parameter = i_parameter
-                        it_wherecon = it_wherecon
-              IMPORTING e_value     = e_value
-                        e_datarows  = e_datarows ).
-  CATCH zcx_dqf_adso INTO gex_adso.
-     gv_message = gex_adso->get_text( ).
-     MESSAGE gv_message TYPE 'E'.
-  CATCH cx_sy_dynamic_osql_syntax INTO gex_syntax.
-     gv_message = `The Where Condition in Testcase ` && i_nums-num && ` of AP ` && i_nums-wp && ` is incorrect.`.
-     MESSAGE gv_message TYPE 'E'.
-  ENDTRY.
-ELSE.
-  "Query
-  lv_counter = i_counter + 1.
-  DATA(lt_parameter) = get_query_keyfigure( EXPORTING i_parameter = i_parameter
-                                                      i_counter   = lv_counter ).
-  APPEND LINES OF it_parameter_final TO lt_parameter_final.
-  APPEND LINES OF lt_parameter TO lt_parameter_final.
-  e_value = get_query_result( EXPORTING i_nums       = i_nums
-                                        i_parameter  = i_parameter
-                                        it_parameter = lt_parameter_final ).
-ENDIF.
+lv_counter = i_query-counter + 1.
+ls_query_keyfigure-parameter = i_query-parameter.
+ls_query_keyfigure-counter   = lv_counter.
+DATA(lt_parameter) = get_query_keyfigure( ls_query_keyfigure ).
+APPEND LINES OF it_parameter_final TO lt_parameter_final.
+APPEND LINES OF lt_parameter TO lt_parameter_final.
+e_value = get_query_result( EXPORTING i_parameter  = i_query-parameter
+                                      it_parameter = lt_parameter_final ).
 ENDMETHOD.
 
 
 METHOD read_query_definition.
 
-DATA: lt_variable TYPE rsr_t_variable_definition.
+DATA: lt_variable     TYPE rsr_t_variable_definition,
+      ls_query_filter TYPE ty_query_filter.
 
 CALL FUNCTION 'RS_VC_GET_QUERY_VIEW_DEF'
   EXPORTING
-    i_infoprovider                = i_parameter-hcpr
-    i_query                       = i_parameter-query
+    i_infoprovider                = i_query-parameter-hcpr
+    i_query                       = i_query-parameter-query
   IMPORTING
     e_t_variable_definition       = lt_variable
   EXCEPTIONS
@@ -1291,9 +1368,10 @@ CALL FUNCTION 'RS_VC_GET_QUERY_VIEW_DEF'
     OTHERS                        = 7.
 
 IF sy-subrc EQ 0.
+  ls_query_filter-testcase = i_ztm_dqf_cases.
+  ls_query_filter-counter  = i_query-counter.
   et_parameter = get_query_filter( EXPORTING it_variable     = lt_variable
-                                             i_ztm_dqf_cases = i_ztm_dqf_cases
-                                             i_counter       = i_counter ).
+                                             i_query_filter  = ls_query_filter ).
 ENDIF.
 
 ENDMETHOD.
@@ -1308,20 +1386,20 @@ TRY.
                                  num    = i_nums-num
                                  wp     = i_nums-wp ].
 
-  e_value = wa_testing-low.
+  e_value-value = wa_testing-low.
 
   IF i_iobjnm = 'ZZ_ADSO' OR i_iobjnm = 'HCPR'.
-    e_comment = wa_testing-comments.
+    e_value-comment = wa_testing-comments.
   ENDIF.
 
-  IF i_iobjnm = 'ZZ_RESULT' OR i_iobjnm = 'ZZ_ADSO'.
-    e_opt = wa_testing-opt.
+  IF i_iobjnm = 'ZZ_RESULT_' && sy-sysid OR i_iobjnm = 'ZZ_ADSO'.
+    e_value-option = wa_testing-opt.
   ENDIF.
 
 CATCH cx_sy_itab_line_not_found.
-  e_opt = ''.
-  e_comment = ''.
-  e_value = ''.
+  e_value-option  = ''.
+  e_value-comment = ''.
+  e_value-value   = ''.
 ENDTRY.
 
 ENDMETHOD.
@@ -1345,8 +1423,8 @@ METHOD run.
 * 29.05.19 TM Add Query
 * 04.06.19 TM Refactoring
 * 25.06.19 TM Minor Changes to all Methods.
-* 11.07.19 TM Change to ABAP 7.43
-* 26.07.19 TM Change to english documentation
+* 12.09.19 TM Change for multiple testcases with mix of Type Check and
+*             Source/Target
 **********************************************************************
 *&---------------------------------------------------------------------*
 "Guten Morgen ... Oh, und falls wir uns nicht mehr sehen, guten Tag, guten Abend und gute Nacht!
@@ -1355,7 +1433,7 @@ TYPES: ty_recipient TYPE STANDARD TABLE OF ty_mailaddress WITH EMPTY KEY.
 SELECT *
   FROM ztm_dqf_cases
   INTO TABLE @DATA(lt_testing)
-  WHERE wp  IN @i_wp AND
+  WHERE wp  IN @i_ap AND
         num IN @i_num.
 
 IF lt_testing[] IS INITIAL.
@@ -1370,7 +1448,7 @@ SELECT DISTINCT wp,
   FROM ztm_dqf_cases
   INTO TABLE @DATA(lt_nums)
   BYPASSING BUFFER
-  WHERE wp  IN @i_wp AND
+  WHERE wp  IN @i_ap AND
         num IN @i_num.
 
 SORT lt_nums ASCENDING BY wp num.
@@ -1423,11 +1501,11 @@ TRY.
   APPEND 'Hallo,'  TO gv_text.
   APPEND 'folgende Testcases sind nicht in Ordnung:' TO gv_text.
   APPEND ' ' TO gv_text.
-  APPEND `Testcase ` && `Expected Result ` && `Result ` && TEXT-007 TO gv_text.
+  APPEND `Testcase ` && `Expected Result ` && `Result ` && text-007 TO gv_text.
   LOOP AT i_cases ASSIGNING FIELD-SYMBOL(<ls_case>).
 
     IF <ls_case>-status = '@0A@'.
-      lv_mail = <ls_case>-num && ` ` && <ls_case>-expected && ` ` && <ls_case>-result && ` ` && <ls_case>-s_comment && ` ` && <ls_case>-t_comment.
+      lv_mail = <ls_case>-testcase && ` ` && <ls_case>-expected && ` ` && <ls_case>-result && ` ` && <ls_case>-s_comment && ` ` && <ls_case>-t_comment.
       APPEND lv_mail TO gv_text.
     ENDIF.
 
