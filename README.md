@@ -122,3 +122,6 @@ Besides the checking of data directly in ADSOs, you can also analyze data in que
 | 010 | TM | 04 | ZZ_RESULT_W1D | C | EQ |
 
 You can also use the mentioned options above with a query.
+
+### Comments
+If you want to add a comment to your testcase, just write your comment either in the comment field of *ZZ_ADSO* or *ZZ_HCPR*. This comment will be displayed in the result.
