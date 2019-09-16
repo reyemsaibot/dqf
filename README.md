@@ -148,7 +148,7 @@ If you want to count the rows of your ADSO and want to compare this number again
 
 | MANDT | Workpackage | Number | InfoObject | Low Value | Type | Hgh Value | Option | Sign | Comment
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 010 | TM | 05 | ZZ_KEYFIGURE | VALUE | COUNT(\*) | C |
+| 010 | TM | 05 | ZZ_KEYFIGURE | VALUE | C | COUNT(\*) |
 
 With this statement you make a rowcount of the entries of your ADSO.
 
