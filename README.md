@@ -38,14 +38,14 @@ You can also check a PSA table with the following parameter:
 
 As mentioned before you can either check for predefined values or compare a source with a target. For this you have to use the **type** field. This is how it should look like when you only check a predefined result:
 
-| MANDT | Workpackage | Number | InfoObject | Low Value | Type | Hight Value | Option | Sign | Comment
+| MANDT | Workpackage | Number | InfoObject | Low Value | Type | High Value | Option | Sign | Comment
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 010 | TM | 01 | ZZ_ADSO | ZZ_TM_ADSO1 | **C** | | A | 
 | 010 | TM | 01 | ZZ_KEYFIGURE | 0AMOUNT | **C** |
-| 010 | TM | 01 | ZZ_RESULT_W1D | 116 | **C** | | EQ |
-| 010 | TM | 01 | ZZ_RESULT_W1Q | 116 | **C** | | EQ |
-| 010 | TM | 01 | ZZ_RESULT_W1P | 1000 | **C** | | EQ |
-| 010 | TM | 01 | 0CALMONTH | 201906 | **C** | | EQ | I | 
+| 010 | TM | 01 | ZZ_RESULT_W1D | 116 | **C** |  | EQ |
+| 010 | TM | 01 | ZZ_RESULT_W1Q | 116 | **C** |  | EQ |
+| 010 | TM | 01 | ZZ_RESULT_W1P | 1000 | **C** |  | EQ |
+| 010 | TM | 01 | 0CALMONTH | 201906 | **C** |  | EQ | I | 
 
 In this case you check on the development system (W1D) the result of the keyfigure 0AMOUNT for 06.2019 in the ADSO ZZ_TM_ADSO1. The result should be 116. 
 
@@ -148,7 +148,7 @@ If you want to add a comment to your testcase, just write your comment either in
 ### Rowcount 
 If you want to count the rows of your ADSO and want to compare this number against a value, you can add COUNT(\*) to the high value of a keyfigure.
 
-| MANDT | Workpackage | Number | InfoObject | Low Value | Type | Hgh Value | Option | Sign | Comment
+| MANDT | Workpackage | Number | InfoObject | Low Value | Type | High Value | Option | Sign | Comment
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 010 | TM | 05 | ZZ_KEYFIGURE | VALUE | C | COUNT(\*) |
 
