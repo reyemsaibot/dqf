@@ -144,11 +144,11 @@ You can also use the mentioned options above with a query.
 If you want to add a comment to your testcase, just write your comment either in the comment field of **ZZ_ADSO** or **ZZ_HCPR**. This comment will be displayed in the result.
 
 ### Rowcount 
-If you want to count the rows of your ADSO and want to compare this number against a value, you can add `COUNT(*)` to the high value of a keyfigure.
+If you want to count the rows of your ADSO and want to compare this number against a value, you can add COUNT(\*) to the high value of a keyfigure.
 
 | MANDT | Workpackage | Number | InfoObject | Low Value | Type | Hgh Value | Option | Sign | Comment
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 010 | TM | 05 | ZZ_KEYFIGURE | VALUE | `COUNT(*)` | C |
+| 010 | TM | 05 | ZZ_KEYFIGURE | VALUE | COUNT(\*) | C |
 
 With this statement you make a rowcount of the entries of your ADSO.
 
