@@ -2,7 +2,7 @@
 
 ## Table of content
 
-1. [ ADSO Tables ](#adso_tables)
+1. [ ADSO Tables ](#adso-tables)
 2. [ Check Values ](#check_values)
 
 The Data Quality Framework (DQF) is a testtool written in ABAP to test specified testcases in SAP Business Warehouse. You can test automatically predefined testcases which are stored in a customer table. You have the posibility to check a predefined result on specific conditions or compare a source and a target. For example the sales volumne of a product in one month for one country.
@@ -20,7 +20,7 @@ The following information have to be provided so that the program can work corre
 - ZZ_RESULT_(P)
 
 For the variable (D), (Q) and (P) you have to set the system id of your system landscape. When you check the active table of an ADSO it have to look like this:
-<a name="adso_tables"></a>
+
 ### ADSO Tables
 
 | MANDT | Workpackage | Number | InfoObject | Low Value | Type | High Value | Option | Sign | Comment
