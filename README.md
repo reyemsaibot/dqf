@@ -2,8 +2,17 @@
 
 ## Table of content
 
-1. [ ADSO Tables ](#adso-tables)
-2. [ Check Values ](#check_values)
+- [ ADSO Tables ](#adso-tables)
+- [ Check Values ](#check-values)
+- [ Not Equal Zero ](#not-equal-zero)
+- [ Options ](#options)
+- [ Source/Target ](#sourcetarget)
+- [ Adjust result value with factor ](#adjust-result-value-with-factor)
+- [ Hierarchy ](#hierarchy)
+- [ Attribute ](#attribute)
+- [ Query ](#query)
+- [ Comments ](#comments)
+- [ Rowcount ](#rowcount)
 
 The Data Quality Framework (DQF) is a testtool written in ABAP to test specified testcases in SAP Business Warehouse. You can test automatically predefined testcases which are stored in a customer table. You have the posibility to check a predefined result on specific conditions or compare a source and a target. For example the sales volumne of a product in one month for one country.
 
@@ -38,7 +47,7 @@ You can also check a PSA table with the following parameter:
 | MANDT | Workpackage | Number | InfoObject | Low Value | Type | High Value | Option | Sign | Comment
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 010 | TM | 01 | ZZ_ADSO | Z_CUSTOMER | C | | **P** | 
-<a name="check_values"></a>
+
 ### Check values
 
 As mentioned before you can either check for predefined values or compare a source with a target. For this you have to use the **type** field. This is how it should look like when you only check a predefined result:
