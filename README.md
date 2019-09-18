@@ -8,7 +8,7 @@ So you can easily check if your development is still valid or maybe something we
 
 - [ ADSO Tables ](#adso-tables)
 - [ Check Values ](#check-values)
-- [ Not Equal Zero ](#not-equal-zero)
+- [ Equal/Not Equal Zero ](#not-equal-zero)
 - [ Options ](#options)
 - [ Source/Target ](#sourcetarget)
 - [ Adjust result value with factor ](#adjust-result-value-with-factor)
@@ -28,7 +28,7 @@ The following information have to be provided so that the program can work corre
 - ZZ_RESULT_(Q)
 - ZZ_RESULT_(P)
 
-For the variable (D), (Q) and (P) you have to set the system id of your system landscape. When you check the active table of an ADSO it have to look like this:
+For the variable (D), (Q) and (P) you have to set the system id of your system landscape. For example W1D as development system. When you check the active table of an ADSO it have to look like this:
 
 ### ADSO Tables
 
@@ -65,7 +65,7 @@ In this case you check on the development system (W1D) the result of the keyfigu
 
 ![Image of Result type Check](https://github.com/reyemsaibot/dqf/blob/master/images/result_type_c.jpg)
 
-### Not Equal Zero
+### Equal/Not Equal Zero
 
 You have to set the Option EQ für Equal or NE for not equal. So you can check with this if even data is available for your selection.
 
@@ -120,11 +120,24 @@ You can also use hierarchies to filter your data. Here is how the entry must loo
 
 | MANDT | Workpackage | Number | InfoObject | Low Value | Type | High Value | Option | Sign | Comment
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 010 | TM | 03 | 0LGENT | ZH_0LGENT_WLRD | C | HI | |  I | EUROPE |
+| 010 | TM | 03 | 0LGENT | ZH_0LGENT_WLRD | C | EUROPE | HI | I | 
 
 In the low value you add the technical name of the hierarchy. As option you have to use **HI** and as high value the node you want to use. In my case we use the hierarchy **ZH_0LGENT_WRLD** with the node and children of **EUROPE**.
 
-You can also add multiple hierarchiy nodes for a InfoObject.
+You can also add multiple hierarchiy nodes for a InfoObject and also at the same time single values for the same InfoObject. 
+
+| MANDT | Workpackage | Number | InfoObject | Low Value | Type | High Value | Option | Sign | Comment
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 010 | TM | 03 | 0LGENT | ZH_0LGENT_WLRD | C | EUROPE | HI | I | 
+| 010 | TM | 03 | 0LGENT | USA | C | | EQ | I | 
+| 010 | TM | 03 | 0LGENT | CHINA | C | | EQ | I | 
+
+Or you can also exclude a value from the hierarchy node you selected.
+
+| MANDT | Workpackage | Number | InfoObject | Low Value | Type | High Value | Option | Sign | Comment
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 010 | TM | 03 | 0LGENT | ZH_0LGENT_WLRD | C | EUROPE | HI | I | 
+| 010 | TM | 03 | 0LGENT | FRANCE | C | | NE | I | 
 
 ### Attribute
 
@@ -157,7 +170,7 @@ Besides the checking of data directly in ADSOs, you can also analyze data in que
 You can also use the mentioned options above with a query.
 
 ### Comments
-If you want to add a comment to your testcase, just write your comment either in the comment field of **ZZ_ADSO** or **ZZ_HCPR**. This comment will be displayed in the result.
+If you want to add a comment to your testcase, just write your comment either in the comment field of **ZZ_ADSO** or **ZZ_HCPR**. This comment will be displayed in the result. The Comment is limited to 256 characters.
 
 ### Rowcount 
 If you want to count the rows of your ADSO and want to compare this number against a value, you can add COUNT(\*) to the high value of a keyfigure.
