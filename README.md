@@ -92,6 +92,12 @@ As option for your selection you can choose between the normal SAP options:
 
 As sign you can choose between Include (I) and Exclude (E). 
 
+Here is an example for a time range.
+
+| MANDT | Workpackage | Number | InfoObject | Low Value | Type | High Value | Option | Sign | Comment
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | 
+| 010 | TM | 01 | 0CALMONTH | 201901 | C | 201909 | BT | I |
+
 ### Source/Target
 
 Besides the check option you can also choose to compare a source with a target. For this use as type S or T.
@@ -181,3 +187,13 @@ If you want to count the rows of your ADSO and want to compare this number again
 
 With this statement you make a rowcount of the entries of your ADSO.
 
+## Example 
+
+1. Define a workpackage e.g. TM
+2. Use the next free testcase number e.g. 1
+3. Define your ZZ_ADSO or ZZ_HCPR e.g. ZZ_ADSO1
+4. Add a comment to the row ZZ_ADSO or ZZ_HCPR
+4. Define your ZZ_KEYFIGURE e.g. 0AMOUNT
+5. Define your ZZ_RESULT_(D) e.g. ZZ_RESULT_W1D
+6. Define your InfoObject with Low Value, High Value, Type, Option and Sign e.g. 0CALMONTH 201901 201909 C BT I
+7. Define a factor if necessary e.g. ZZ_FACTOR /100
