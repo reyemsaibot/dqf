@@ -169,6 +169,7 @@ Besides the checking of data directly in ADSOs, you can also analyze data in que
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 010 | TM | 04 | 0LGENT_ZREGION | USA | C | | EQ | I | 
 | 010 | TM | 04 | ZZ_HCPR | Z_HCPR | C |
+| 010 | TM | 04 | ZZ_HCPR | Z_HCPR | C |
 | 010 | TM | 04 | ZZ_KEYFIGURE | VALUE | C |
 | 010 | TM | 04 | ZZ_QUERY | Z_QUERY_DQF | C |
 | 010 | TM | 04 | ZZ_RESULT_W1D | 0 | C | | EQ |
@@ -197,3 +198,4 @@ With this statement you make a rowcount of the entries of your ADSO.
 5. Define your ZZ_RESULT_(D) e.g. ZZ_RESULT_W1D
 6. Define your InfoObject with Low Value, High Value, Type, Option and Sign e.g. 0CALMONTH 201901 201909 C BT I
 7. Define a factor if necessary e.g. ZZ_FACTOR /100
+8.
