@@ -194,8 +194,7 @@ With this statement you make a rowcount of the entries of your ADSO.
 2. Use the next free testcase number e.g. 1
 3. Define your ZZ_ADSO or ZZ_HCPR e.g. ZZ_ADSO1
 4. Add a comment to the row ZZ_ADSO or ZZ_HCPR
-4. Define your ZZ_KEYFIGURE e.g. 0AMOUNT
-5. Define your ZZ_RESULT_(D) e.g. ZZ_RESULT_W1D
-6. Define your InfoObject with Low Value, High Value, Type, Option and Sign e.g. 0CALMONTH 201901 201909 C BT I
-7. Define a factor if necessary e.g. ZZ_FACTOR /100
-8.
+5. Define your ZZ_KEYFIGURE e.g. 0AMOUNT
+6. Define your ZZ_RESULT_(D) e.g. ZZ_RESULT_W1D
+7. Define your InfoObject with Low Value, High Value, Type, Option and Sign e.g. 0CALMONTH 201901 201909 C BT I
+8. Define a factor if necessary e.g. ZZ_FACTOR /100
