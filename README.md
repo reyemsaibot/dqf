@@ -17,6 +17,7 @@ So you can easily check if your development is still valid or maybe something we
 - [ Query ](#query)
 - [ Comments ](#comments)
 - [ Rowcount ](#rowcount)
+- [ Variables ] (#variables)
 
 How it works:
 Run the program Z_DQF. Choose your work package or your testcase number and click execute. Before you can run the program you have to add your cases into the customer table ZTM_DQF_CASES.
@@ -47,6 +48,19 @@ You can also check a PSA table with the following parameter:
 | MANDT | Workpackage | Number | InfoObject | Low Value | Type | High Value | Option | Sign | Comment
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 010 | TM | 01 | ZZ_ADSO | Z_CUSTOMER | C | | **P** | 
+
+You can also check a HANA table with the following parameter (the table must published before in SAP NetWeaver):
+
+| MANDT | Workpackage | Number | InfoObject | Low Value | Type | High Value | Option | Sign | Comment
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 010 | TM | 01 | ZZ_ADSO | Z_HANAVIEW | C | | **H** | 
+
+You can also check a ODSO table with the following parameter:
+
+| MANDT | Workpackage | Number | InfoObject | Low Value | Type | High Value | Option | Sign | Comment
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 010 | TM | 01 | ZZ_ADSO | Z_ODSO | C | | **O** | 
+
 
 ### Check values
 
@@ -114,6 +128,20 @@ Besides the check option you can also choose to compare a source with a target. 
 
 ![Image of Result type Source & Target](https://github.com/reyemsaibot/dqf/blob/master/images/result_type_source_target.jpg)
 
+You can also check 2 source test cases versus 1 target case in case of mapping for example.
+
+| MANDT | Workpackage | Number | InfoObject | Low Value | Type | High Value | Option | Sign | Comment
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | 
+| 010 | TM | 02 | 0LGENT | 1234 | **S1** | | EQ | I |
+| 010 | TM | 02 | ZZ_ADSO | ZZ_ADSO1 | **S1** | | A |
+| 010 | TM | 02 | ZZ_KEYFIGURE | 0AMOUNT | **S1** |
+| 010 | TM | 02 | 0LGENT | 0815 | **S2** | | EQ | I |
+| 010 | TM | 02 | ZZ_ADSO | ZZ_ADSO1 | **S2** | | A |
+| 010 | TM | 02 | ZZ_KEYFIGURE | 0AMOUNT | **S2** |
+| 010 | TM | 02 | ZLGENT | 4711 | **T** | | EQ | I |
+| 010 | TM | 02 | ZZ_ADSO | ZZ_ADSO2 | **T** | | A |
+| 010 | TM | 02 | ZZ_KEYFIGURE | 0AMOUNT | **T** |
+
 ### Adjust result value with factor
 
 In this case the active table of the ADSO ZZ_ADSO1 with the legal entity 1234 will be checked against the active table of the ADSO ZZ_ADSO2 with the legal entity 4711. The source has another factor of the data, we use the parameter **ZZ_FACTOR** to adjust the data. At the moment the following operators are supported:
@@ -169,7 +197,6 @@ Besides the checking of data directly in ADSOs, you can also analyze data in que
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 010 | TM | 04 | 0LGENT_ZREGION | USA | C | | EQ | I | 
 | 010 | TM | 04 | ZZ_HCPR | Z_HCPR | C |
-| 010 | TM | 04 | ZZ_HCPR | Z_HCPR | C |
 | 010 | TM | 04 | ZZ_KEYFIGURE | VALUE | C |
 | 010 | TM | 04 | ZZ_QUERY | Z_QUERY_DQF | C |
 | 010 | TM | 04 | ZZ_RESULT_W1D | 0 | C | | EQ |
@@ -187,6 +214,18 @@ If you want to count the rows of your ADSO and want to compare this number again
 | 010 | TM | 05 | ZZ_KEYFIGURE | VALUE | C | COUNT(\*) |
 
 With this statement you make a rowcount of the entries of your ADSO.
+
+## Variables
+You can use the following variables to determine flexible values for time infoobjects.
+| Variable | Info |
+| $CALMONTH$ | Delivers the current sy-datum(6) |
+| $CALMONTH2$ | Delivers the current sy-datum+4(2) |
+| $CALYEAR$ | Delivers the current sy-datum(4) |
+| $FISCPER$ | Delivers the current sy-datum(4) 0 sy-datum+4(2) |
+| $FISCPER3$ | Delivers the current 0 sy-datum+4(2) |
+| $FISCYEAR$ | Delivers the current sy-datum(4) |
+
+You can also work with offset. For example $CALMONTH$-1 delivers you the previous month of the year.
 
 ## Example 
 

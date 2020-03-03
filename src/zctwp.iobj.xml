@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_IOBJ" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <IOBJ>
+    <INFOOBJECT>ZCTWP</INFOOBJECT>
+    <VERSION>A</VERSION>
+    <TYPE>CHA</TYPE>
+    <OBJSTAT>ACT</OBJSTAT>
+    <ACTIVFL>X</ACTIVFL>
+    <FIELDNM>/BIC/ZCTWP</FIELDNM>
+    <TEXTSHORT>Workpackage</TEXTSHORT>
+    <TEXTLONG>Workpackage</TEXTLONG>
+    <CHAPRSNT>2</CHAPRSNT>
+    <CHANAV>0</CHANAV>
+    <CHASEL>0</CHASEL>
+    <CHABASNM>ZCTWP</CHABASNM>
+    <NOVALFL>X</NOVALFL>
+    <NOLANGU>X</NOLANGU>
+    <HIETABFL>X</HIETABFL>
+    <HIENMTFL>X</HIENMTFL>
+    <DATATP>CHAR</DATATP>
+    <INTLEN>000020</INTLEN>
+    <TXTTIMFL>0</TXTTIMFL>
+    <TXTTABFL>0</TXTTABFL>
+    <NUMBRANR>0001256</NUMBRANR>
+    <CNVSTATE>0</CNVSTATE>
+    <SIDCONVERT>N</SIDCONVERT>
+    <OUTPUTLEN>000020</OUTPUTLEN>
+    <HIETAB>/BIC/HZCTWP</HIETAB>
+    <F4QUERYEXEC>Q</F4QUERYEXEC>
+    <INFOAREA>WSS_TM</INFOAREA>
+    <LENG>000020</LENG>
+    <CHATP>GEN</CHATP>
+    <HIETP>GEN</HIETP>
+    <F4DEFAULT>D</F4DEFAULT>
+   </IOBJ>
+  </asx:values>
+ </asx:abap>
+</abapGit>
