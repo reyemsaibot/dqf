@@ -48,7 +48,7 @@ interface ZIF_DQF_SELECT
     RAISING
       zcx_dqf.
 
-  "! <p class="shorttext synchronized" lang="en"></p>
+  "! <p class="shorttext synchronized" lang="en">Get Display Attribute</p>
   "!
   "! @parameter I_DISPLAY_ATTRIBUTE | <p class="shorttext synchronized" lang="en">Display Attribute</p>
   "! @parameter RT_Value            | <p class="shorttext synchronized" lang="en">Return table of display attributes</p>
@@ -74,6 +74,11 @@ interface ZIF_DQF_SELECT
     RAISING
       zcx_dqf .
 
+  "! <p class="shorttext synchronized" lang="en"></p>
+  "!
+  "! @parameter i_infoobject | <p class="shorttext synchronized" lang="en"></p>
+  "! @parameter r_value | <p class="shorttext synchronized" lang="en"></p>
+  "! @raising zcx_dqf | <p class="shorttext synchronized" lang="en"></p>
   METHODS get_conversion_base_char
     IMPORTING
       !i_infoobject TYPE rsiobjnm
@@ -82,6 +87,11 @@ interface ZIF_DQF_SELECT
     RAISING
       zcx_dqf .
 
+  "! <p class="shorttext synchronized" lang="en"></p>
+  "!
+  "! @parameter i_infoobject | <p class="shorttext synchronized" lang="en"></p>
+  "! @parameter r_value | <p class="shorttext synchronized" lang="en"></p>
+  "! @raising zcx_dqf | <p class="shorttext synchronized" lang="en"></p>
   METHODS get_conversion_characteristic
     IMPORTING
       !i_infoobject TYPE rsiobjnm
@@ -90,6 +100,11 @@ interface ZIF_DQF_SELECT
     RAISING
       zcx_dqf .
 
+  "! <p class="shorttext synchronized" lang="en">Get data element for infoobject master data table</p>
+  "!
+  "! @parameter i_infoobject | <p class="shorttext synchronized" lang="en">Infoobject</p>
+  "! @parameter r_value      | <p class="shorttext synchronized" lang="en">Return data element of infoobject</p>
+  "! @raising zcx_dqf        | <p class="shorttext synchronized" lang="en">Raise Exception if infoobject is not found</p>
   METHODS get_dataelement_masterdata
     IMPORTING
       !i_infoobject TYPE rsiobjnm
@@ -172,5 +187,18 @@ interface ZIF_DQF_SELECT
       VALUE(r_value) TYPE rschabasnm
     RAISING
       zcx_dqf .
+
+  "! <p class="shorttext synchronized" lang="en">Get DQF Testcases</p>
+  "!
+  "! @parameter i_workpackage | <p class="shorttext synchronized" lang="en">Workpackage</p>
+  "! @parameter i_case_number | <p class="shorttext synchronized" lang="en">DQF Testcase</p>
+  "! @parameter rt_cases      | <p class="shorttext synchronized" lang="en">Table of DQF Testcases</p>
+  Methods get_dqf_testcases
+    Importing
+      !i_workpackage TYPE zcl_dqf=>tyt_workpackages
+      !i_case_number TYPE zcl_dqf=>tyt_cases
+    RETURNING
+      VALUE(rt_cases) TYPE zcl_dqf=>tyt_zvb0t_dqf.
+
 
 ENDINTERFACE.

@@ -95,11 +95,11 @@ CLASS zcx_dqf IMPLEMENTATION.
   ELSE.
     if_t100_message~t100key = textid.
   ENDIF.
-  me->table = table.
-  me->num  = num.
-  me->wp    = wp.
+  me->table  = table.
+  me->num    = num.
+  me->wp     = wp.
   me->iobjnm = iobjnm.
   me->option = option.
-  me->sign = sign.
+  me->sign   = sign.
   ENDMETHOD.
 ENDCLASS.
