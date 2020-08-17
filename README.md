@@ -17,7 +17,7 @@ So you can easily check if your development is still valid or maybe something we
 - [ Query ](#query)
 - [ Comments ](#comments)
 - [ Rowcount ](#rowcount)
-- [ Variables ] (#variables)
+- [ Variables ](#variables)
 
 How it works:
 Run the program Z_DQF. Choose your work package or your testcase number and click execute. Before you can run the program you have to add your cases into the customer table ZTM_DQF_CASES.
@@ -215,15 +215,16 @@ If you want to count the rows of your ADSO and want to compare this number again
 
 With this statement you make a rowcount of the entries of your ADSO.
 
-## Variables
+### Variables
 You can use the following variables to determine flexible values for time infoobjects.
 | Variable | Info |
-| $CALMONTH$ | Delivers the current sy-datum(6) |
-| $CALMONTH2$ | Delivers the current sy-datum+4(2) |
-| $CALYEAR$ | Delivers the current sy-datum(4) |
-| $FISCPER$ | Delivers the current sy-datum(4) 0 sy-datum+4(2) |
-| $FISCPER3$ | Delivers the current 0 sy-datum+4(2) |
-| $FISCYEAR$ | Delivers the current sy-datum(4) |
+|--- | --- |
+| $CALMONTH$ | Delivers the current year/month |
+| $CALMONTH2$ | Delivers the current month |
+| $CALYEAR$ | Delivers the current year |
+| $FISCPER$ | Delivers the current fiscal year/period |
+| $FISCPER3$ | Delivers the current fiscal period |
+| $FISCYEAR$ | Delivers the current fiscal year |
 
 You can also work with offset. For example $CALMONTH$-1 delivers you the previous month of the year.
 

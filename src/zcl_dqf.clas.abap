@@ -46,6 +46,29 @@ CLASS zcl_dqf DEFINITION
         datarows TYPE ty_datarows,
       END OF ty_data .
 
+    TYPES:
+      BEGIN OF ty_analyze_result,
+        date        TYPE sy-datum,
+        time        TYPE sy-uzeit,
+        status      TYPE c LENGTH 4,
+        workpackage TYPE ty_workpackage,
+        testcase    TYPE int2,
+        expected    TYPE string,
+        result      TYPE string,
+        s_comment   TYPE ztm_dqf_cases-comments,
+        s_datarows  TYPE p LENGTH 16 DECIMALS 0,
+        t_comment   TYPE ztm_dqf_cases-comments,
+        t_datarows  TYPE p LENGTH 16 DECIMALS 0,
+        quote       TYPE p LENGTH 16 DECIMALS 2,
+      END OF ty_analyze_result.
+
+    TYPES: tyt_analyze_result TYPE STANDARD TABLE OF ty_analyze_result WITH EMPTY KEY.
+
+    CLASS-METHODS analyze_results
+      IMPORTING
+        it_cases TYPE tyt_analyze_result.
+
+
     "! <p class="shorttext synchronized" lang="en">Run the data quality framework</p>
     "!
     "! @parameter iv_mail           | <p class="shorttext synchronized" lang="en">Send Mail? Yes or No</p>
@@ -639,7 +662,7 @@ ENDCLASS.
 
 
 
-CLASS ZCL_DQF IMPLEMENTATION.
+CLASS zcl_dqf IMPLEMENTATION.
 
 
   METHOD build_test_case.
@@ -1408,7 +1431,7 @@ CLASS ZCL_DQF IMPLEMENTATION.
     "Optimize ALV Grid Output
     lv_layout-colwidth_optimize  = 'X'.
 
-*Create field catalog
+    "Create field catalog
     ls_fieldcat-fieldname = 'STATUS'.
     ls_fieldcat-seltext_m = TEXT-001.
     APPEND ls_fieldcat TO lt_fieldcat.
@@ -1716,6 +1739,100 @@ CLASS ZCL_DQF IMPLEMENTATION.
     rt_cases = VALUE tyt_zvb0t_dqf( FOR <ls_case> IN gt_cases WHERE ( type(1) = i_type ) ( <ls_case> ) ).
   ENDMETHOD.
 
+  METHOD analyze_results.
+
+    DATA: lt_fieldcat TYPE slis_t_fieldcat_alv.
+    DATA: ls_fieldcat TYPE slis_fieldcat_alv.
+    DATA: lv_layout   TYPE slis_layout_alv.
+
+    DATA(lt_case) = it_cases.
+
+    "Optimize ALV Grid Output
+    lv_layout-colwidth_optimize  = 'X'.
+
+    "Create field catalog
+    ls_fieldcat-fieldname = 'DATE'.
+    ls_fieldcat-seltext_m = 'Date'.
+    APPEND ls_fieldcat TO lt_fieldcat.
+    CLEAR: ls_fieldcat.
+
+    ls_fieldcat-fieldname = 'TIME'.
+    ls_fieldcat-seltext_m = 'Time'.
+    APPEND ls_fieldcat TO lt_fieldcat.
+    CLEAR: ls_fieldcat.
+
+    ls_fieldcat-fieldname = 'STATUS'.
+    ls_fieldcat-seltext_m = 'Status'.
+    APPEND ls_fieldcat TO lt_fieldcat.
+    CLEAR: ls_fieldcat.
+
+    ls_fieldcat-fieldname = 'WORKPACKAGE'.
+    ls_fieldcat-seltext_m = 'Workpackage'.
+    APPEND ls_fieldcat TO lt_fieldcat.
+    CLEAR: ls_fieldcat.
+
+    ls_fieldcat-fieldname = 'TESTCASE'.
+    ls_fieldcat-seltext_m = 'Testcase'.
+    APPEND ls_fieldcat TO lt_fieldcat.
+    CLEAR: ls_fieldcat.
+
+    ls_fieldcat-fieldname = 'T_COMMENT'.
+    ls_fieldcat-seltext_l = TEXT-009.
+    APPEND ls_fieldcat TO lt_fieldcat.
+    CLEAR: ls_fieldcat.
+
+    ls_fieldcat-fieldname = 'EXPECTED'.
+    ls_fieldcat-seltext_m = TEXT-005.
+    APPEND ls_fieldcat TO lt_fieldcat.
+    CLEAR: ls_fieldcat.
+
+    ls_fieldcat-fieldname = 'RESULT'.
+    ls_fieldcat-seltext_m = TEXT-006.
+    APPEND ls_fieldcat TO lt_fieldcat.
+    CLEAR: ls_fieldcat.
+
+    ls_fieldcat-fieldname = 'S_DATAROWS'.
+    ls_fieldcat-seltext_l = TEXT-008.
+    APPEND ls_fieldcat TO lt_fieldcat.
+    CLEAR: ls_fieldcat.
+
+    ls_fieldcat-fieldname = 'T_DATAROWS'.
+    ls_fieldcat-seltext_l = TEXT-010.
+    APPEND ls_fieldcat TO lt_fieldcat.
+    CLEAR: ls_fieldcat.
+
+    ls_fieldcat-fieldname = 'S_COMMENT'.
+    ls_fieldcat-seltext_l = TEXT-007.
+    ls_fieldcat-no_out    = 'X'.
+    APPEND ls_fieldcat TO lt_fieldcat.
+    CLEAR: ls_fieldcat.
+
+    ls_fieldcat-fieldname = 'QUOTE'.
+    ls_fieldcat-seltext_l = 'Quote'.
+    APPEND ls_fieldcat TO lt_fieldcat.
+    CLEAR: ls_fieldcat.
+
+    CALL FUNCTION 'REUSE_ALV_GRID_DISPLAY'
+      EXPORTING
+        is_layout   = lv_layout
+        it_fieldcat = lt_fieldcat
+      TABLES
+        t_outtab    = lt_case.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  ENDMETHOD.
 
   METHOD run.
 **********************************************************************
@@ -1803,7 +1920,6 @@ CLASS ZCL_DQF IMPLEMENTATION.
     INSERT ztm_dqf_result FROM TABLE lt_result_save.
 
   ENDMETHOD.
-
 
   METHOD send_mail.
 
@@ -1916,78 +2032,6 @@ CLASS ZCL_DQF IMPLEMENTATION.
   METHOD set_workpackages.
     me->gv_workpackage = i_workpackage.
   ENDMETHOD.
-
-
-  METHOD _check_if_display_attribute.
-* +--------------------------------------------------------------------------------------+
-* | Check if InfoObject is a display attribute
-* +--------------------------------------------------------------------------------------+
-* | [--->] iv_infoobject                  TYPE        rsiobjnm
-* | [<---] rt_display_attributes          TYPE        tyt_display_attributes
-* +--------------------------------------------------------------------------------------+
-
-    SELECT chabasnm,
-           attrinm,
-           attritp
-      FROM rsdbchatr
-      INTO TABLE @rt_display_attributes
-      WHERE objvers = @rs_c_objvers-active AND
-            attritp = 'DIS' AND
-            attrinm = @iv_infoobject.                "#EC CI_SEL_NESTED
-
-    IF sy-subrc NE 0.
-      RAISE EXCEPTION TYPE zcx_dqf
-        EXPORTING
-          textid = zcx_dqf=>infoobjects_not_exists
-          iobjnm = iv_infoobject.
-    ENDIF.
-  ENDMETHOD.
-
-
-  METHOD _check_if_navigation_attribute.
-* +--------------------------------------------------------------------------------------+
-* | Check if InfoObject is a navigation attribute
-* +--------------------------------------------------------------------------------------+
-* | [--->] iv_infoobject                  TYPE        rsiobjnm
-* | [<---] rt_navigation_attributes       TYPE        tyt_navigation_attributes
-* +--------------------------------------------------------------------------------------+
-
-    SELECT chanm,
-           atrnavnm
-      FROM rsdatrnav
-      INTO TABLE @rt_navigation_attributes
-      WHERE atrnavnm = @iv_infoobject AND
-            objvers  = @rs_c_objvers-active.
-
-    IF sy-subrc NE 0.
-      RAISE EXCEPTION TYPE zcx_dqf
-        EXPORTING
-          textid = zcx_dqf=>infoobjects_not_exists
-          iobjnm = iv_infoobject.
-    ENDIF.
-  ENDMETHOD.
-
-
-  METHOD _check_if_table_exists.
-* +--------------------------------------------------------------------------------------+
-* | Check if database table exists
-* +--------------------------------------------------------------------------------------+
-* | [--->] i_table                        TYPE        string
-* +--------------------------------------------------------------------------------------+
-
-    SELECT SINGLE @abap_true
-      FROM dd02l
-      INTO @DATA(exists)
-     WHERE tabname = @i_table.
-
-    IF sy-subrc NE 0.
-      RAISE EXCEPTION TYPE zcx_dqf
-        EXPORTING
-          textid = zcx_dqf=>table_not_found
-          table  = i_table.
-    ENDIF.
-  ENDMETHOD.
-
 
   METHOD _get_conversion_base_char.
     SELECT SINGLE convexit,
@@ -2128,6 +2172,71 @@ CLASS ZCL_DQF IMPLEMENTATION.
   ENDMETHOD.
 
 
+  METHOD _load_dqf_testcases.
+* +--------------------------------------------------------------------------------------+
+* | Load DQF test cases from database
+* +--------------------------------------------------------------------------------------+
+* | [--->] ir_workpackage                 TYPE        tyr_workpackage
+* | [--->] ir_case_number                 TYPE        tyr_cases
+* | [<---] rt_cases                       TYPE        tyt_zvb0t_dqf
+* +--------------------------------------------------------------------------------------+
+
+    SELECT *
+      FROM ztm_dqf_cases
+      INTO TABLE @rt_cases
+      WHERE wp  IN @ir_workpackage AND
+            num IN @ir_case_number.
+
+  ENDMETHOD.
+
+
+  METHOD _check_if_table_exists.
+* +--------------------------------------------------------------------------------------+
+* | Check if database table exists
+* +--------------------------------------------------------------------------------------+
+* | [--->] i_table                        TYPE        string
+* +--------------------------------------------------------------------------------------+
+
+    SELECT SINGLE @abap_true
+      FROM dd02l
+      INTO @DATA(exists)
+     WHERE tabname = @i_table.
+
+    IF sy-subrc NE 0.
+      RAISE EXCEPTION TYPE zcx_dqf
+        EXPORTING
+          textid = zcx_dqf=>table_not_found
+          table  = i_table.
+    ENDIF.
+  ENDMETHOD.
+
+
+  METHOD _check_if_display_attribute.
+* +--------------------------------------------------------------------------------------+
+* | Check if InfoObject is a display attribute
+* +--------------------------------------------------------------------------------------+
+* | [--->] iv_infoobject                  TYPE        rsiobjnm
+* | [<---] rt_display_attributes          TYPE        tyt_display_attributes
+* +--------------------------------------------------------------------------------------+
+
+    SELECT chabasnm,
+           attrinm,
+           attritp
+      FROM rsdbchatr
+      INTO TABLE @rt_display_attributes
+      WHERE objvers = @rs_c_objvers-active AND
+            attritp = 'DIS' AND
+            attrinm = @iv_infoobject.                "#EC CI_SEL_NESTED
+
+    IF sy-subrc NE 0.
+      RAISE EXCEPTION TYPE zcx_dqf
+        EXPORTING
+          textid = zcx_dqf=>infoobjects_not_exists
+          iobjnm = iv_infoobject.
+    ENDIF.
+  ENDMETHOD.
+
+
   METHOD _get_fieldname_of_infoobject.
 * +--------------------------------------------------------------------------------------+
 * | Get fieldname of InfoObject
@@ -2151,21 +2260,28 @@ CLASS ZCL_DQF IMPLEMENTATION.
     ENDIF.
   ENDMETHOD.
 
-
-  METHOD _load_dqf_testcases.
+  METHOD _check_if_navigation_attribute.
 * +--------------------------------------------------------------------------------------+
-* | Load DQF test cases from database
+* | Check if InfoObject is a navigation attribute
 * +--------------------------------------------------------------------------------------+
-* | [--->] ir_workpackage                 TYPE        tyr_workpackage
-* | [--->] ir_case_number                 TYPE        tyr_cases
-* | [<---] rt_cases                       TYPE        tyt_zvb0t_dqf
+* | [--->] iv_infoobject                  TYPE        rsiobjnm
+* | [<---] rt_navigation_attributes       TYPE        tyt_navigation_attributes
 * +--------------------------------------------------------------------------------------+
 
-    SELECT *
-      FROM ztm_dqf_cases
-      INTO TABLE @rt_cases
-      WHERE wp  IN @ir_workpackage AND
-            num IN @ir_case_number.
+    SELECT chanm,
+           atrnavnm
+      FROM rsdatrnav
+      INTO TABLE @rt_navigation_attributes
+      WHERE atrnavnm = @iv_infoobject AND
+            objvers  = @rs_c_objvers-active.
 
+    IF sy-subrc NE 0.
+      RAISE EXCEPTION TYPE zcx_dqf
+        EXPORTING
+          textid = zcx_dqf=>infoobjects_not_exists
+          iobjnm = iv_infoobject.
+    ENDIF.
   ENDMETHOD.
+
+
 ENDCLASS.
