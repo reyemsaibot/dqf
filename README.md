@@ -226,7 +226,7 @@ You can use the following variables to determine flexible values for time infoob
 | $FISCPER3$ | Delivers the current fiscal period |
 | $FISCYEAR$ | Delivers the current fiscal year |
 
-You can also work with offset. For example $CALMONTH$-1 delivers you the previous month of the year.
+You can also work with offset. For example $CALMONTH2$-1 delivers you the previous month of the year.
 
 ## Example 
 
