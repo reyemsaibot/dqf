@@ -23,7 +23,7 @@ DATA: lv_wp          TYPE ztm_dqf_cases-wp.
 DATA: lv_num         TYPE int2.
 DATA: lv_timestamp   TYPE timestamp.
 DATA: lo_excel       TYPE REF TO zcl_excel.
-DATA: lt_dqf_results TYPE zcl_dqf=>tyt_analyze_result.
+DATA: lt_dqf_results TYPE zcl_dqf=>ty_t_analyze_result.
 DATA: ls_dqf_result  TYPE zcl_dqf=>ty_analyze_result.
 
 SELECTION-SCREEN BEGIN OF BLOCK b1k2 WITH FRAME TITLE TEXT-001.

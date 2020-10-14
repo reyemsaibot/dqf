@@ -24,6 +24,42 @@
      <ENTRY>Workpackage</ENTRY>
      <LENGTH>21</LENGTH>
     </item>
+    <item>
+     <ID>I</ID>
+     <KEY>004</KEY>
+     <ENTRY>Testcase</ENTRY>
+     <LENGTH>18</LENGTH>
+    </item>
+    <item>
+     <ID>I</ID>
+     <KEY>005</KEY>
+     <ENTRY>Expected Result</ENTRY>
+     <LENGTH>25</LENGTH>
+    </item>
+    <item>
+     <ID>I</ID>
+     <KEY>006</KEY>
+     <ENTRY>Result</ENTRY>
+     <LENGTH>16</LENGTH>
+    </item>
+    <item>
+     <ID>I</ID>
+     <KEY>007</KEY>
+     <ENTRY>Source Comment</ENTRY>
+     <LENGTH>24</LENGTH>
+    </item>
+    <item>
+     <ID>I</ID>
+     <KEY>008</KEY>
+     <ENTRY>Source Datarows</ENTRY>
+     <LENGTH>25</LENGTH>
+    </item>
+    <item>
+     <ID>I</ID>
+     <KEY>010</KEY>
+     <ENTRY>Target Datarows</ENTRY>
+     <LENGTH>25</LENGTH>
+    </item>
    </TPOOL>
    <DESCRIPTIONS>
     <SEOCOMPOTX>
@@ -46,9 +82,27 @@
     </SEOCOMPOTX>
     <SEOCOMPOTX>
      <CLSNAME>ZCL_DQF</CLSNAME>
+     <CMPNAME>CREATE_WHERECONDITION</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Create dynamic where condition</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CLSNAME>ZCL_DQF</CLSNAME>
      <CMPNAME>DETERMINE_MULTIPLE_ENTRIES</CMPNAME>
      <LANGU>E</LANGU>
      <DESCRIPT>Determine multiple entries for one InfoObject</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CLSNAME>ZCL_DQF</CLSNAME>
+     <CMPNAME>DETERMINE_VALUES</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Determine value of one test case row</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CLSNAME>ZCL_DQF</CLSNAME>
+     <CMPNAME>DETERMINE_VARIABLES</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Determine variables values</DESCRIPT>
     </SEOCOMPOTX>
     <SEOCOMPOTX>
      <CLSNAME>ZCL_DQF</CLSNAME>
@@ -58,9 +112,27 @@
     </SEOCOMPOTX>
     <SEOCOMPOTX>
      <CLSNAME>ZCL_DQF</CLSNAME>
+     <CMPNAME>GC_GT</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Greater Than</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CLSNAME>ZCL_DQF</CLSNAME>
      <CMPNAME>GC_HIERARCHY</CMPNAME>
      <LANGU>E</LANGU>
      <DESCRIPT>Type Hierarchy</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CLSNAME>ZCL_DQF</CLSNAME>
+     <CMPNAME>GC_LT</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Lower Than</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CLSNAME>ZCL_DQF</CLSNAME>
+     <CMPNAME>GC_NE</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Not Equal to</DESCRIPT>
     </SEOCOMPOTX>
     <SEOCOMPOTX>
      <CLSNAME>ZCL_DQF</CLSNAME>
@@ -76,9 +148,21 @@
     </SEOCOMPOTX>
     <SEOCOMPOTX>
      <CLSNAME>ZCL_DQF</CLSNAME>
+     <CMPNAME>GET_DATA</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Get the data from the database</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CLSNAME>ZCL_DQF</CLSNAME>
      <CMPNAME>GET_HIERARCHY_ELEMENTS</CMPNAME>
      <LANGU>E</LANGU>
      <DESCRIPT>Get single members of a hierarchy</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CLSNAME>ZCL_DQF</CLSNAME>
+     <CMPNAME>GET_NAVIGATION_ATTRIBUTE</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Get Navigation Attributes</DESCRIPT>
     </SEOCOMPOTX>
     <SEOCOMPOTX>
      <CLSNAME>ZCL_DQF</CLSNAME>
@@ -90,25 +174,31 @@
      <CLSNAME>ZCL_DQF</CLSNAME>
      <CMPNAME>GET_PARAMETERS</CMPNAME>
      <LANGU>E</LANGU>
-     <DESCRIPT>Get Parameter</DESCRIPT>
+     <DESCRIPT>Get parameter</DESCRIPT>
     </SEOCOMPOTX>
     <SEOCOMPOTX>
      <CLSNAME>ZCL_DQF</CLSNAME>
      <CMPNAME>GET_RESULT</CMPNAME>
      <LANGU>E</LANGU>
-     <DESCRIPT>Get Result</DESCRIPT>
+     <DESCRIPT>Get result</DESCRIPT>
     </SEOCOMPOTX>
     <SEOCOMPOTX>
      <CLSNAME>ZCL_DQF</CLSNAME>
      <CMPNAME>GET_SINGLEENTRIES</CMPNAME>
      <LANGU>E</LANGU>
-     <DESCRIPT>Get Single Entries</DESCRIPT>
+     <DESCRIPT>Get single entries</DESCRIPT>
     </SEOCOMPOTX>
     <SEOCOMPOTX>
      <CLSNAME>ZCL_DQF</CLSNAME>
      <CMPNAME>GET_TESTCASES</CMPNAME>
      <LANGU>E</LANGU>
-     <DESCRIPT>Get Testcases</DESCRIPT>
+     <DESCRIPT>Get test cases</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CLSNAME>ZCL_DQF</CLSNAME>
+     <CMPNAME>GET_TYPE</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Get Type for test case</DESCRIPT>
     </SEOCOMPOTX>
     <SEOCOMPOTX>
      <CLSNAME>ZCL_DQF</CLSNAME>
@@ -222,7 +312,7 @@
      <CLSNAME>ZCL_DQF</CLSNAME>
      <CMPNAME>SEND_MAIL</CMPNAME>
      <LANGU>E</LANGU>
-     <DESCRIPT>Send Mail</DESCRIPT>
+     <DESCRIPT>Send mail</DESCRIPT>
     </SEOCOMPOTX>
     <SEOCOMPOTX>
      <CLSNAME>ZCL_DQF</CLSNAME>
@@ -234,7 +324,7 @@
      <CLSNAME>ZCL_DQF</CLSNAME>
      <CMPNAME>SET_CASE_NUMBER</CMPNAME>
      <LANGU>E</LANGU>
-     <DESCRIPT>Set Case Number</DESCRIPT>
+     <DESCRIPT>Set Case number</DESCRIPT>
     </SEOCOMPOTX>
     <SEOCOMPOTX>
      <CLSNAME>ZCL_DQF</CLSNAME>
@@ -252,7 +342,7 @@
      <CLSNAME>ZCL_DQF</CLSNAME>
      <CMPNAME>SET_SAVE_RESULT</CMPNAME>
      <LANGU>E</LANGU>
-     <DESCRIPT>Save Result to Database</DESCRIPT>
+     <DESCRIPT>Save result to database</DESCRIPT>
     </SEOCOMPOTX>
     <SEOCOMPOTX>
      <CLSNAME>ZCL_DQF</CLSNAME>
@@ -268,69 +358,15 @@
     </SEOCOMPOTX>
     <SEOCOMPOTX>
      <CLSNAME>ZCL_DQF</CLSNAME>
-     <CMPNAME>TYR_CASES</CMPNAME>
-     <LANGU>E</LANGU>
-     <DESCRIPT>Test case number</DESCRIPT>
-    </SEOCOMPOTX>
-    <SEOCOMPOTX>
-     <CLSNAME>ZCL_DQF</CLSNAME>
-     <CMPNAME>TYR_MAILADDRESSES</CMPNAME>
-     <LANGU>E</LANGU>
-     <DESCRIPT>Table of mail addresses</DESCRIPT>
-    </SEOCOMPOTX>
-    <SEOCOMPOTX>
-     <CLSNAME>ZCL_DQF</CLSNAME>
-     <CMPNAME>TYR_WORKPACKAGES</CMPNAME>
-     <LANGU>E</LANGU>
-     <DESCRIPT>Range of work package</DESCRIPT>
-    </SEOCOMPOTX>
-    <SEOCOMPOTX>
-     <CLSNAME>ZCL_DQF</CLSNAME>
-     <CMPNAME>TYT_ALV_GRID</CMPNAME>
-     <LANGU>E</LANGU>
-     <DESCRIPT>Table of result test cases</DESCRIPT>
-    </SEOCOMPOTX>
-    <SEOCOMPOTX>
-     <CLSNAME>ZCL_DQF</CLSNAME>
-     <CMPNAME>TYT_DISPLAY_ATTRIBUTES</CMPNAME>
-     <LANGU>E</LANGU>
-     <DESCRIPT>Table of Display Attributes</DESCRIPT>
-    </SEOCOMPOTX>
-    <SEOCOMPOTX>
-     <CLSNAME>ZCL_DQF</CLSNAME>
-     <CMPNAME>TYT_INFOOBJECT_WITH_FIELD</CMPNAME>
-     <LANGU>E</LANGU>
-     <DESCRIPT>Table of InfoObjects with Fieldname</DESCRIPT>
-    </SEOCOMPOTX>
-    <SEOCOMPOTX>
-     <CLSNAME>ZCL_DQF</CLSNAME>
-     <CMPNAME>TYT_NAVIGATION_ATTRIBUTES</CMPNAME>
-     <LANGU>E</LANGU>
-     <DESCRIPT>Table of Navigation Attributes</DESCRIPT>
-    </SEOCOMPOTX>
-    <SEOCOMPOTX>
-     <CLSNAME>ZCL_DQF</CLSNAME>
-     <CMPNAME>TYT_STRING</CMPNAME>
-     <LANGU>E</LANGU>
-     <DESCRIPT>Table of string</DESCRIPT>
-    </SEOCOMPOTX>
-    <SEOCOMPOTX>
-     <CLSNAME>ZCL_DQF</CLSNAME>
-     <CMPNAME>TYT_WHERECONDITION</CMPNAME>
-     <LANGU>E</LANGU>
-     <DESCRIPT>Table of where condition</DESCRIPT>
-    </SEOCOMPOTX>
-    <SEOCOMPOTX>
-     <CLSNAME>ZCL_DQF</CLSNAME>
-     <CMPNAME>TYT_ZVB0T_DQF</CMPNAME>
-     <LANGU>E</LANGU>
-     <DESCRIPT>Table of test cases</DESCRIPT>
-    </SEOCOMPOTX>
-    <SEOCOMPOTX>
-     <CLSNAME>ZCL_DQF</CLSNAME>
      <CMPNAME>TY_ALV_GRID</CMPNAME>
      <LANGU>E</LANGU>
      <DESCRIPT>Output for ALV Grid</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CLSNAME>ZCL_DQF</CLSNAME>
+     <CMPNAME>TY_ANALYZE_RESULT</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Structure of analyze data output</DESCRIPT>
     </SEOCOMPOTX>
     <SEOCOMPOTX>
      <CLSNAME>ZCL_DQF</CLSNAME>
@@ -354,7 +390,7 @@
      <CLSNAME>ZCL_DQF</CLSNAME>
      <CMPNAME>TY_DATA</CMPNAME>
      <LANGU>E</LANGU>
-     <DESCRIPT>Structure of possible break points which can set by the user</DESCRIPT>
+     <DESCRIPT>Structure of output data</DESCRIPT>
     </SEOCOMPOTX>
     <SEOCOMPOTX>
      <CLSNAME>ZCL_DQF</CLSNAME>
@@ -415,6 +451,66 @@
      <CMPNAME>TY_RESULT_VALUE</CMPNAME>
      <LANGU>E</LANGU>
      <DESCRIPT>Result value</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CLSNAME>ZCL_DQF</CLSNAME>
+     <CMPNAME>TY_R_CASES</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Test case number</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CLSNAME>ZCL_DQF</CLSNAME>
+     <CMPNAME>TY_R_MAILADDRESSES</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Table of mail addresses</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CLSNAME>ZCL_DQF</CLSNAME>
+     <CMPNAME>TY_R_WORKPACKAGES</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Range of work package</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CLSNAME>ZCL_DQF</CLSNAME>
+     <CMPNAME>TY_T_ALV_GRID</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Table of result test cases</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CLSNAME>ZCL_DQF</CLSNAME>
+     <CMPNAME>TY_T_DISPLAY_ATTRIBUTES</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Table of Display Attributes</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CLSNAME>ZCL_DQF</CLSNAME>
+     <CMPNAME>TY_T_DQF</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Table of test cases</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CLSNAME>ZCL_DQF</CLSNAME>
+     <CMPNAME>TY_T_INFOOBJECT_WITH_FIELD</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Table of InfoObjects with Fieldname</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CLSNAME>ZCL_DQF</CLSNAME>
+     <CMPNAME>TY_T_NAVIGATION_ATTRIBUTES</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Table of Navigation Attributes</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CLSNAME>ZCL_DQF</CLSNAME>
+     <CMPNAME>TY_T_STRING</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Table of string</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CLSNAME>ZCL_DQF</CLSNAME>
+     <CMPNAME>TY_T_WHERECONDITION</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Table of where condition</DESCRIPT>
     </SEOCOMPOTX>
     <SEOCOMPOTX>
      <CLSNAME>ZCL_DQF</CLSNAME>
