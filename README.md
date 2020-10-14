@@ -1,8 +1,8 @@
 # Data Quality Framework
 
-The Data Quality Framework (DQF) is a testtool written in ABAP to test specified testcases in SAP Business Warehouse. You can test automatically predefined testcases which are stored in a customer table. You have the posibility to check a predefined result on specific conditions or compare a source and a target. For example the sales volumne of a product in one month for one country.
+The Data Quality Framework (DQF) is a testtool written in ABAP to test specified test cases in SAP Business Warehouse. You can test automatically predefined test cases which are stored in a customer table. You have the posibility to check a predefined result on specific conditions or compare a source and a target. For example the sales volumne of a product in one month for one country.
 
-So you can easily check if your development is still valid or maybe something went wrong. As source you can either use a PSA Table, an ADSO or a query. As a target you can use an ADSO or a query. 
+So you can easily check if your development is still valid or maybe something went wrong. As source you can either use a PSA Table, HANA Table, an ADSO or a query. As a target you can use an ADSO or a query. 
 
 ## Table of content
 
@@ -18,9 +18,10 @@ So you can easily check if your development is still valid or maybe something we
 - [ Comments ](#comments)
 - [ Rowcount ](#rowcount)
 - [ Variables ](#variables)
+  [ Analyze Results ] (#results)
 
 How it works:
-Run the program Z_DQF. Choose your work package or your testcase number and click execute. Before you can run the program you have to add your cases into the customer table ZTM_DQF_CASES.
+Run the program Z_DQF. Choose your work package or your test case number and click execute. Before you can run the program you have to add your cases into the customer table ZTM_DQF_CASES.
 
 The following information have to be provided so that the program can work correctly. If you want to check an ADSO or PSA you need this:
 - ZZ_ADSO
@@ -227,6 +228,14 @@ You can use the following variables to determine flexible values for time infoob
 | $FISCYEAR$ | Delivers the current fiscal year |
 
 You can also work with offset. For example $CALMONTH2$-1 delivers you the previous month of the year.
+
+### Analyze Results
+You can save the result of each run with the option "xyz". Each run will be saved in the database table ztm_dqf_results. When you run the program Z_DQF_RESULT you can either display the result in an ALV Grid or in an Excel Sheet. You have the following selection options to narrow down your result.
+ - Workpackage
+ - Test case number
+ - Timestamp
+ 
+With timestamp you can choose a specific run of your test cases.
 
 ## Example 
 
